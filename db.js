@@ -3,74 +3,68 @@ import { query, queryExactlyOne, queryOne } from "./query.js";
 import { SQLQuery } from "./sql.js";
 import { Tx } from "./tx.js";
 
-class DB {
-	pool;
+export function pgist(config) {
+	const pool = new pg.Pool(config);
 
-	constructor(poolConfig) {
-		this.pool = new pg.Pool(poolConfig);
-	}
+	return {
+		query: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
 
-	async query(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
+			const client = await pool.connect();
 
-		const client = await this.pool.connect();
-
-		try {
-			return await query(q, client);
-		} finally {
-			await client.release();
-		}
-	}
-
-	async one(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
-
-		const client = await this.pool.connect();
-
-		try {
-			return await queryOne(q, client);
-		} finally {
-			await client.release();
-		}
-	}
-
-	async onlyOne(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
-
-		const client = await this.pool.connect();
-
-		try {
-			return await queryExactlyOne(q, client);
-		} finally {
-			await client.release();
-		}
-	}
-
-	async tx(fn) {
-		const client = await this.pool.connect();
-		await client.query("BEGIN");
-
-		const txn = new Tx(client);
-
-		try {
-			await fn(txn);
-			await client.query("COMMIT");
-		} catch (e) {
-			if (!txn.rolledBack) {
-				await txn.rollback();
+			try {
+				return await query(q, client);
+			} finally {
+				await client.release();
 			}
+		},
 
-			throw e;
-		} finally {
-			client.release();
-		}
-	}
+		one: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
 
-	end() {
-		this.pool.end();
-	}
-}
+			const client = await pool.connect();
 
-export function sql2(config) {
-	return new DB(config);
+			try {
+				return await queryOne(q, client);
+			} finally {
+				await client.release();
+			}
+		},
+
+		onlyOne: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
+
+			const client = await pool.connect();
+
+			try {
+				return await queryExactlyOne(q, client);
+			} finally {
+				await client.release();
+			}
+		},
+
+		tx: async (fn) => {
+			const client = await pool.connect();
+			await client.query("BEGIN");
+
+			const txn = new Tx(client);
+
+			try {
+				await fn(txn);
+				await client.query("COMMIT");
+			} catch (e) {
+				if (!txn.rolledBack) {
+					await txn.rollback();
+				}
+
+				throw e;
+			} finally {
+				client.release();
+			}
+		},
+
+		end: () => {
+			pool.end();
+		},
+	};
 }

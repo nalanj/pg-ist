@@ -1,10 +1,10 @@
 import assert from "node:assert";
 import { after, afterEach, beforeEach, test } from "node:test";
-import { sql2 } from "./db.js";
+import { pgist } from "./db.js";
 import { ExactlyOneError } from "./errors.js";
 import { databaseUrl } from "./test.js";
 
-const db = sql2({
+const db = pgist({
 	connectionString: databaseUrl,
 	allowExitOnIdle: true,
 	connectionTimeoutMillis: 3000,
