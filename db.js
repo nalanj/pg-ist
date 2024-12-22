@@ -1,6 +1,6 @@
 import pg from "pg";
 import { query, queryExactlyOne, queryOne } from "./query.js";
-import { SQLQuery } from "./sql.js";
+import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
 export function pgist(config) {
@@ -8,7 +8,7 @@ export function pgist(config) {
 
 	return {
 		query: async (strings, ...argsIn) => {
-			const q = new SQLQuery(strings, argsIn);
+			const q = sql(strings, ...argsIn);
 
 			const client = await pool.connect();
 
@@ -20,7 +20,7 @@ export function pgist(config) {
 		},
 
 		one: async (strings, ...argsIn) => {
-			const q = new SQLQuery(strings, argsIn);
+			const q = sql(strings, ...argsIn);
 
 			const client = await pool.connect();
 
@@ -32,7 +32,7 @@ export function pgist(config) {
 		},
 
 		onlyOne: async (strings, ...argsIn) => {
-			const q = new SQLQuery(strings, argsIn);
+			const q = sql(strings, ...argsIn);
 
 			const client = await pool.connect();
 

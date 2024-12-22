@@ -41,10 +41,8 @@ test("onlyOne with results", async () => {
 });
 
 test("onlyOne without results", async () => {
-	await db.query`INSERT INTO db_testing(name) VALUES (${"Sally"}), (${"Jimmy"}) RETURNING *`;
-
-	assert.rejects(
-		async () => await db.onlyOne`SELECT * FROM db_testing`,
+	await assert.rejects(
+		async () => await db.onlyOne`SELECT * FROM db_testing WHERE id = -1`,
 		ExactlyOneError,
 	);
 });

@@ -15,7 +15,9 @@ export function sql(stringsIn, ...argsIn) {
 			isSQL: true,
 			strings: [stringsIn[0]],
 			values,
-			text: () => stringsIn[0],
+			get text() {
+				return stringsIn[0];
+			},
 		};
 	}
 
