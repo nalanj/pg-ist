@@ -1,34 +1,34 @@
 import { query, queryExactlyOne, queryOne } from "./query.js";
 import { SQLQuery } from "./sql.js";
 
-export class Tx {
-	poolClient;
-	rolledBack = false;
+export function tx(poolClient) {
+	let rolledBack = false;
 
-	constructor(poolClient) {
-		this.poolClient = poolClient;
-	}
+	return {
+		query: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
 
-	async query(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
+			return await query(q, poolClient);
+		},
 
-		return await query(q, this.poolClient);
-	}
+		one: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
 
-	async one(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
+			return await queryOne(q, poolClient);
+		},
 
-		return await queryOne(q, this.poolClient);
-	}
+		onlyOne: async (strings, ...argsIn) => {
+			const q = new SQLQuery(strings, argsIn);
 
-	async onlyOne(strings, ...argsIn) {
-		const q = new SQLQuery(strings, argsIn);
+			return await queryExactlyOne(q, poolClient);
+		},
 
-		return await queryExactlyOne(q, this.poolClient);
-	}
+		rollback: async () => {
+			if (!rolledBack) {
+				await query("ROLLBACK;", poolClient);
+			}
 
-	async rollback() {
-		await this.query`ROLLBACK`;
-		this.rolledBack = true;
-	}
+			rolledBack = true;
+		},
+	};
 }

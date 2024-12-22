@@ -1,7 +1,7 @@
 import pg from "pg";
 import { query, queryExactlyOne, queryOne } from "./query.js";
 import { SQLQuery } from "./sql.js";
-import { Tx } from "./tx.js";
+import { tx } from "./tx.js";
 
 export function pgist(config) {
 	const pool = new pg.Pool(config);
@@ -47,15 +47,13 @@ export function pgist(config) {
 			const client = await pool.connect();
 			await client.query("BEGIN");
 
-			const txn = new Tx(client);
+			const txn = tx(client);
 
 			try {
 				await fn(txn);
 				await client.query("COMMIT");
 			} catch (e) {
-				if (!txn.rolledBack) {
-					await txn.rollback();
-				}
+				await txn.rollback();
 
 				throw e;
 			} finally {
