@@ -23,7 +23,8 @@ test("query", async () => {
 	const result =
 		await db.query`INSERT INTO db_testing(name) VALUES (${"Jimmy"}) RETURNING *`;
 
-	assert.deepStrictEqual(result, [{ id: result[0].id, name: "Jimmy" }]);
+	const rows = Array.from(result);
+	assert.deepStrictEqual(rows, [{ id: rows[0].id, name: "Jimmy" }]);
 });
 
 test("one", async () => {
