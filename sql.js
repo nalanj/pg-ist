@@ -1,60 +1,3 @@
-export class SQLQuery {
-	values;
-	strings;
-
-	constructor(strings, argsIn) {
-		this.values = [];
-		this.strings = [];
-
-		// short circuit when no args
-		if (strings.length === 1 && strings[0]) {
-			this.strings[0] = strings[0];
-			return;
-		}
-
-		let outOffset = 0;
-		for (let inOffset = 0; inOffset < argsIn.length; inOffset++) {
-			const arg = argsIn[inOffset];
-
-			if (arg instanceof SQLQuery) {
-				// merge the opening string of the query arg into the previous string
-				this.strings[outOffset] = this.strings[outOffset]
-					? this.strings[outOffset] + (strings[inOffset] ?? "") + arg.strings[0]
-					: strings[inOffset] + (arg.strings[0] ?? "");
-
-				this.strings.splice(outOffset + 1, 0, ...arg.strings.slice(1));
-				this.values.splice(outOffset, 0, ...arg.values);
-				outOffset += arg.strings.length - 1;
-			} else {
-				this.strings[outOffset] = this.strings[outOffset]
-					? this.strings[outOffset] + (strings[inOffset] ?? "")
-					: (strings[inOffset] ?? "");
-
-				this.values[outOffset] = arg;
-				outOffset += 1;
-			}
-
-			// append the last string
-			if (inOffset === argsIn.length - 1) {
-				this.strings[outOffset] = this.strings[outOffset]
-					? this.strings[outOffset] + (strings[inOffset + 1] ?? "")
-					: (strings[inOffset + 1] ?? "");
-			}
-		}
-	}
-
-	get text() {
-		let out = "";
-		this.strings.slice(0, -1).forEach((string, idx) => {
-			out += `${string}$${idx + 1}`;
-		});
-
-		out += this.strings[this.strings.length - 1];
-
-		return out;
-	}
-}
-
 /**
  * Process the given query template
  *
@@ -62,10 +5,71 @@ export class SQLQuery {
  * @param argsIn - arguments for the template
  * @returns - a Query object
  */
-export function sql(strings, ...argsIn) {
-	return new SQLQuery(strings, argsIn);
+export function sql(stringsIn, ...argsIn) {
+	const values = [];
+	const strings = [];
+
+	if (stringsIn.length === 1 && stringsIn[0]) {
+		// short circuit when no args
+		return {
+			isSQL: true,
+			strings: [stringsIn[0]],
+			values,
+			text: () => stringsIn[0],
+		};
+	}
+
+	let outOffset = 0;
+	for (let inOffset = 0; inOffset < argsIn.length; inOffset++) {
+		const arg = argsIn[inOffset];
+
+		if (arg.isSQL) {
+			// merge the opening string of the query arg into the previous string
+			strings[outOffset] = strings[outOffset]
+				? strings[outOffset] + (stringsIn[inOffset] ?? "") + arg.strings[0]
+				: stringsIn[inOffset] + (arg.strings[0] ?? "");
+
+			strings.splice(outOffset + 1, 0, ...arg.strings.slice(1));
+			values.splice(outOffset, 0, ...arg.values);
+			outOffset += arg.strings.length - 1;
+		} else {
+			strings[outOffset] = strings[outOffset]
+				? strings[outOffset] + (stringsIn[inOffset] ?? "")
+				: (stringsIn[inOffset] ?? "");
+
+			values[outOffset] = arg;
+			outOffset += 1;
+		}
+
+		// append the last string
+		if (inOffset === argsIn.length - 1) {
+			strings[outOffset] = strings[outOffset]
+				? strings[outOffset] + (stringsIn[inOffset + 1] ?? "")
+				: (stringsIn[inOffset + 1] ?? "");
+		}
+	}
+
+	return {
+		isSQL: true,
+		strings,
+		values,
+		get text() {
+			return queryText(strings);
+		},
+	};
+}
+
+function queryText(strings) {
+	let out = "";
+	strings.slice(0, -1).forEach((string, idx) => {
+		out += `${string}$${idx + 1}`;
+	});
+
+	out += strings[strings.length - 1];
+
+	return out;
 }
 
 export function unsafe(unsafeString) {
-	return new SQLQuery([unsafeString]);
+	return sql([unsafeString]);
 }
