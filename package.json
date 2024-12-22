@@ -1,0 +1,32 @@
+{
+	"name": "pgist",
+	"description": "PostgreSQL powered by template strings",
+	"type": "module",
+	"exports": {
+		".": "./index.js"
+	},
+	"version": "0.0.0",
+	"scripts": {
+		"fix": "biome check --write",
+		"test": "biome check && node --test",
+		"citest": "biome check && node --test --test-reporter node-test-github-reporter"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/nalanj/pgist.git"
+	},
+	"keywords": ["utilities"],
+	"author": "Alan Johnson",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/nalanj/pgist/issues"
+	},
+	"homepage": "https://github.com/nalanj/pgist#readme",
+	"dependencies": {
+		"pg": "8.13.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"node-test-github-reporter": "1.2.0"
+	}
+}

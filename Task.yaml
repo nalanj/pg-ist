@@ -1,0 +1,44 @@
+# https://taskfile.dev
+
+version: "3"
+
+vars:
+  THIS_DATABASE_URL: "postgres://postgres:postgres@127.0.0.1:5432/sql2-test"
+
+tasks:
+  test:
+    desc: Run all tests
+    deps:
+      - test:unit
+
+  test:unit:
+    desc: Run unit tests
+    deps:
+      - :npm:install
+      - db:create
+    cmds:
+      - node --test --enable-source-maps --test-reporter spec {{.CLI_ARGS}}
+    interactive: true
+
+  psql:
+    desc: Access the database through psql
+    interactive: true
+    deps:
+      - db:create
+    cmds:
+      - psql "{{.THIS_DATABASE_URL}}"
+
+  db:create:
+    desc: Create the database
+    deps:
+      - :compose:up
+    run: once
+    cmds:
+      - psql $DATABASE_URL -c "CREATE DATABASE \"sql2-test\";"
+    status:
+      - psql "{{.THIS_DATABASE_URL}}" -c "\d"
+
+  db:drop:
+    desc: Drop the database
+    cmds:
+      - psql $DATABASE_URL -c "DROP DATABASE IF EXISTS \"sql2-test\";"
