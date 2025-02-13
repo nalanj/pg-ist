@@ -3,13 +3,15 @@
 	"description": "PostgreSQL powered by template strings",
 	"type": "module",
 	"exports": {
-		".": "./index.js"
+		".": "./dist/index.js"
 	},
 	"version": "0.0.0",
 	"scripts": {
 		"fix": "biome check --write",
 		"test": "biome check && tsx --test",
-		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter"
+		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
+		"build": "tsc",
+		"clean": "rm -rf dist"
 	},
 	"repository": {
 		"type": "git",
