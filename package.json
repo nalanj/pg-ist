@@ -8,14 +8,14 @@
 	"version": "0.0.0",
 	"scripts": {
 		"fix": "biome check --write",
-		"test": "biome check && node --test",
-		"citest": "biome check && node --test --test-reporter node-test-github-reporter"
+		"test": "biome check && tsx --test",
+		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/nalanj/pgist.git"
 	},
-	"keywords": ["utilities"],
+	"keywords": ["utilities", "pg", "postgresql"],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
@@ -23,10 +23,17 @@
 	},
 	"homepage": "https://github.com/nalanj/pgist#readme",
 	"dependencies": {
-		"pg": "8.13.1"
+		"pg": "8.13.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"node-test-github-reporter": "1.2.0"
+		"@types/node": "22.13.1",
+		"@types/pg": "8.11.11",
+		"node-test-github-reporter": "1.2.0",
+		"tsx": "4.19.2",
+		"typescript": "5.7.3"
+	},
+	"volta": {
+		"node": "22.14.0"
 	}
 }

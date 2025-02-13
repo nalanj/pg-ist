@@ -1,22 +1,33 @@
-/**
- * Process the given query template
- *
- * @param strings - strings to use for the template
- * @param argsIn - arguments for the template
- * @returns - a Query object
- */
-export function sql(stringsIn, ...argsIn) {
-	const values = [];
-	const strings = [];
+const SQL = Symbol("SQL");
+
+export type SQL = {
+	[SQL]: true;
+	strings: string[];
+	values: unknown[];
+	text: string;
+};
+
+function isSQL(arg: unknown): arg is SQL {
+	return (arg as SQL)[SQL] === true;
+}
+
+export function sql(
+	stringsIn: TemplateStringsArray,
+	...argsIn: unknown[]
+): SQL {
+	const values: unknown[] = [];
+	const strings: string[] = [];
 
 	if (stringsIn.length === 1 && stringsIn[0]) {
+		const firstString = stringsIn[0];
+
 		// short circuit when no args
 		return {
-			isSQL: true,
-			strings: [stringsIn[0]],
+			[SQL]: true,
+			strings: [firstString],
 			values,
-			get text() {
-				return stringsIn[0];
+			get text(): string {
+				return firstString;
 			},
 		};
 	}
@@ -25,7 +36,7 @@ export function sql(stringsIn, ...argsIn) {
 	for (let inOffset = 0; inOffset < argsIn.length; inOffset++) {
 		const arg = argsIn[inOffset];
 
-		if (arg.isSQL) {
+		if (isSQL(arg)) {
 			// merge the opening string of the query arg into the previous string
 			strings[outOffset] = strings[outOffset]
 				? strings[outOffset] + (stringsIn[inOffset] ?? "") + arg.strings[0]
@@ -52,7 +63,7 @@ export function sql(stringsIn, ...argsIn) {
 	}
 
 	return {
-		isSQL: true,
+		[SQL]: true,
 		strings,
 		values,
 		get text() {
@@ -61,7 +72,7 @@ export function sql(stringsIn, ...argsIn) {
 	};
 }
 
-function queryText(strings) {
+function queryText(strings: string[]) {
 	let out = "";
 	strings.slice(0, -1).forEach((string, idx) => {
 		out += `${string}$${idx + 1}`;
@@ -72,6 +83,13 @@ function queryText(strings) {
 	return out;
 }
 
-export function unsafe(unsafeString) {
-	return sql([unsafeString]);
+export function unsafe(unsafeString: string): SQL {
+	return {
+		[SQL]: true,
+		strings: [unsafeString],
+		values: [],
+		get text() {
+			return unsafeString;
+		},
+	};
 }

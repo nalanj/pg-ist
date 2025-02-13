@@ -1,4 +1,4 @@
-export function camelCase(underscored) {
+export function camelCase(underscored: string) {
 	return underscored.split("_").reduce((acc, cur, idx) => {
 		if (idx === 0) {
 			return acc + cur.toLowerCase();

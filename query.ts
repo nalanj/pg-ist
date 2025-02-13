@@ -2,7 +2,12 @@ import pg from "pg";
 import { camelCase } from "./camel-case.js";
 import { ExactlyOneError, UniqueConstraintError } from "./errors.js";
 
-function result(result) {
+type QueryResult<T> = {
+	length: number;
+	[Symbol.iterator]: () => Iterator<T>;
+};
+
+function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
 	return {
 		length: result.rows.length,
 		[Symbol.iterator]: () => {
@@ -19,19 +24,22 @@ function result(result) {
 									camelCase(k),
 									v,
 								]),
-							),
+							) as T,
 							done: false,
 						};
 					}
 
-					return { done: true };
+					return { done: true, value: undefined };
 				},
 			};
 		},
 	};
 }
 
-async function queryInternal(sql, poolClient) {
+async function queryInternal<T extends object>(
+	sql: pg.QueryConfig | string,
+	poolClient: pg.PoolClient,
+): Promise<QueryResult<T>> {
 	try {
 		let pgResult = await poolClient.query(sql);
 
@@ -39,7 +47,7 @@ async function queryInternal(sql, poolClient) {
 			pgResult = pgResult[pgResult.length - 1];
 		}
 
-		return result(pgResult);
+		return queryResult<T>(pgResult);
 	} catch (e) {
 		if (e instanceof pg.DatabaseError && e.code === "23505") {
 			throw UniqueConstraintError.fromDBError(e);
@@ -49,23 +57,32 @@ async function queryInternal(sql, poolClient) {
 	}
 }
 
-export async function query(sql, poolClient) {
-	return await queryInternal(sql, poolClient);
+export async function query<T extends object>(
+	sql: pg.QueryConfig | string,
+	poolClient: pg.PoolClient,
+) {
+	return await queryInternal<T>(sql, poolClient);
 }
 
-export async function queryOne(sql, poolClient) {
-	const result = await queryInternal(sql, poolClient);
+export async function queryOne<T extends object>(
+	sql: pg.QueryConfig | string,
+	poolClient: pg.PoolClient,
+): Promise<T | null> {
+	const result = await queryInternal<T>(sql, poolClient);
 
 	const first = result[Symbol.iterator]().next();
 	if (first.value) {
-		return first.value;
+		return first.value as T;
 	}
 
 	return null;
 }
 
-export async function queryExactlyOne(sql, poolClient) {
-	const result = await queryOne(sql, poolClient);
+export async function queryExactlyOne<T extends object>(
+	sql: pg.QueryConfig | string,
+	poolClient: pg.PoolClient,
+): Promise<T> {
+	const result = await queryOne<T>(sql, poolClient);
 
 	if (!result) {
 		throw new ExactlyOneError("queryExactlyOne returned no rows");
