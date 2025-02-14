@@ -15,19 +15,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/nalanj/pgist.git"
+		"url": "git+https://github.com/nalanj/pg-ist.git"
 	},
-	"keywords": [
-		"utilities",
-		"pg",
-		"postgresql"
-	],
+	"keywords": ["utilities", "pg", "postgresql"],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/nalanj/pgist/issues"
+		"url": "https://github.com/nalanj/pg-ist/issues"
 	},
-	"homepage": "https://github.com/nalanj/pgist#readme",
+	"homepage": "https://github.com/nalanj/pg-ist#readme",
 	"dependencies": {
 		"pg": "8.13.3"
 	},
@@ -42,9 +38,5 @@
 	"volta": {
 		"node": "22.14.0"
 	},
-	"files": [
-		"dist/**/*",
-		"README.md",
-		"LICENSE"
-	]
+	"files": ["dist/**/*", "README.md", "LICENSE"]
 }
