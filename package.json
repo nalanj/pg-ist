@@ -1,5 +1,5 @@
 {
-	"name": "pgist",
+	"name": "pg-ist",
 	"description": "PostgreSQL powered by template strings",
 	"type": "module",
 	"exports": {
@@ -17,11 +17,7 @@
 		"type": "git",
 		"url": "git+https://github.com/nalanj/pgist.git"
 	},
-	"keywords": [
-		"utilities",
-		"pg",
-		"postgresql"
-	],
+	"keywords": ["utilities", "pg", "postgresql"],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
@@ -42,9 +38,5 @@
 	"volta": {
 		"node": "22.14.0"
 	},
-	"files": [
-		"dist/**/*",
-		"README.md",
-		"LICENSE"
-	]
+	"files": ["dist/**/*", "README.md", "LICENSE"]
 }
