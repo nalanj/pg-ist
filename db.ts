@@ -1,19 +1,37 @@
 import pg from "pg";
-import { query, queryExactlyOne, queryOne } from "./query.js";
+import { type QueryResult, query, queryExactlyOne, queryOne } from "./query.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
 export type PgistConfig = pg.PoolConfig;
 export type TxFn<T> = (txn: ReturnType<typeof tx>) => Promise<T>;
+export type Queryable = {
+	query: <T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) => Promise<QueryResult<T>>;
 
-export function pgist(config: PgistConfig) {
+	one: <T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) => Promise<T | null>;
+
+	onlyOne: <T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) => Promise<T>;
+};
+
+export function pgist(
+	config: PgistConfig,
+): Queryable & { tx: <T>(fn: TxFn<T>) => Promise<T>; end: () => void } {
 	const pool = new pg.Pool(config);
 
 	return {
 		query: async <T extends object>(
 			strings: TemplateStringsArray,
 			...argsIn: unknown[]
-		) => {
+		): Promise<QueryResult<T>> => {
 			const q = sql(strings, ...argsIn);
 
 			const client = await pool.connect();
@@ -55,7 +73,7 @@ export function pgist(config: PgistConfig) {
 			}
 		},
 
-		tx: async <T>(fn: TxFn<T>): Promise<T> => {
+		tx: async (fn) => {
 			const client = await pool.connect();
 			await client.query("BEGIN");
 

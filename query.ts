@@ -2,7 +2,7 @@ import pg from "pg";
 import { camelCase } from "./camel-case.js";
 import { ExactlyOneError, UniqueConstraintError } from "./errors.js";
 
-type QueryResult<T> = {
+export type QueryResult<T> = {
 	length: number;
 	[Symbol.iterator]: () => Iterator<T>;
 };
