@@ -110,3 +110,19 @@ test("tx with exception", async () => {
 		await db.one`SELECT * FROM db_testing WHERE id = ${inserted.id}`;
 	assert.strictEqual(result, undefined);
 });
+
+test("cursor", async () => {
+	for (let i = 0; i < 150; i++) {
+		await db.one`INSERT INTO db_testing(name) VALUES (${`Human ${i}`}) RETURNING *`;
+	}
+
+	const lowest = 0;
+	const cursor = db.cursor(100);
+	let count = 0;
+	for await (const row of await cursor<DbTesting>`SELECT * FROM db_testing WHERE id > ${lowest}`) {
+		count += 1;
+		assert.ok(row.id > 1);
+	}
+
+	assert.equal(count, 150);
+});

@@ -1,5 +1,7 @@
 import pg from "pg";
+import Cursor from "pg-cursor";
 import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
+import { convertRow } from "./query.js";
 import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
@@ -108,6 +110,35 @@ class DB implements Queryable {
 	) {
 		const fn = onlyOneFn(strings, ...argsIn);
 		return (props: P, tx?: Queryable) => fn(props, tx || this);
+	}
+
+	cursor(rowCount = 100) {
+		const pool = this.pool;
+
+		return async function* <T extends object>(
+			strings: TemplateStringsArray,
+			...argsIn: unknown[]
+		) {
+			const client = await pool.connect();
+
+			try {
+				const q = sql(strings, ...argsIn);
+				const cursor = new Cursor(q.text, q.values);
+
+				const result = client.query(cursor);
+
+				let rows = await result.read(rowCount);
+				while (rows.length > 0) {
+					for (const row of rows) {
+						yield convertRow(row) as T;
+					}
+
+					rows = await result.read(rowCount);
+				}
+			} finally {
+				await client.release();
+			}
+		};
 	}
 
 	/**

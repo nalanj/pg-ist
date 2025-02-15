@@ -7,6 +7,12 @@ export type QueryResult<T> = {
 	[Symbol.iterator]: () => Iterator<T>;
 };
 
+export function convertRow(row: Record<string, unknown>): unknown {
+	return Object.fromEntries(
+		Object.entries(row).map(([k, v]) => [camelCase(k), v]),
+	);
+}
+
 function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
 	return {
 		length: result.rows.length,
@@ -19,12 +25,8 @@ function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
 
 					if (idx < result.rows.length) {
 						return {
-							value: Object.fromEntries(
-								Object.entries(result.rows[idx]).map(([k, v]) => [
-									camelCase(k),
-									v,
-								]),
-							) as T,
+							value: convertRow(result.rows[idx]) as T,
+
 							done: false,
 						};
 					}
