@@ -12,16 +12,6 @@ export type PgistConfig = {
 	 * Configuration for the underline node-postgres pool.
 	 * See [https://node-postgres.com/apis/pool](https://node-postgres.com/apis/pool)
 	 * for more details.
-	 *
-	 * @example
-	 * ```
-	 * const db = pgist({
-	 *   db: {
-	 *     connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
-	 *     connectionTimeoutMillis: 3000
-	 *   }
-	 * });
-	 * ```
 	 */
 	db: pg.PoolConfig;
 };
@@ -155,6 +145,17 @@ class DB implements Queryable {
 
 /**
  * Sets up a new database connection.
+ *
+ *
+ * @example
+ * ```
+ * const db = pgist({
+ *   db: {
+ *     connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
+ *     connectionTimeoutMillis: 3000
+ *   }
+ * });
+ * ```
  */
 export function pgist(config: PgistConfig) {
 	return new DB(config);
