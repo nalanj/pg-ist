@@ -1,6 +1,6 @@
 import pg from "pg";
 import { camelCase } from "./camel-case.js";
-import { ExactlyOneError, UniqueConstraintError } from "./errors.js";
+import { OnlyOneError, UniqueConstraintError } from "./errors.js";
 
 export type QueryResult<T> = {
 	length: number;
@@ -85,7 +85,7 @@ export async function queryOnlyOne<T extends object>(
 	const result = await queryOne<T>(sql, poolClient);
 
 	if (!result) {
-		throw new ExactlyOneError("queryExactlyOne returned no rows");
+		throw new OnlyOneError("queryExactlyOne returned no rows");
 	}
 
 	return result;

@@ -70,7 +70,7 @@ if (result !== undefined) {
 
 #### onlyOne
 
-Returns a single object or throws an `ExactlyOneError`. Useful in cases where
+Returns a single object or throws an `OnlyOneError`. Useful in cases where
 if you don't get a result you know something's wrong.
 
 ```ts

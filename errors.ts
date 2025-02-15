@@ -1,13 +1,13 @@
 import type pg from "pg";
 
 /**
- * ExactlyOneErrors are thrown when queryExactlyOne is called with a query that
+ * OnlyOneError is thrown when queryExactlyOne is called with a query that
  * returns no rows.
  */
-export class ExactlyOneError extends Error {
+export class OnlyOneError extends Error {
 	constructor(m: string) {
 		super(m);
-		Object.setPrototypeOf(this, ExactlyOneError.prototype);
+		Object.setPrototypeOf(this, OnlyOneError.prototype);
 	}
 }
 

@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { after, before, test } from "node:test";
 import { pgist } from "./db.js";
-import { ExactlyOneError } from "./errors.js";
+import { OnlyOneError } from "./errors.js";
 import { databaseUrl } from "./test-help.js";
 
 const db = pgist({
@@ -53,7 +53,7 @@ test("onlyOne with results", async () => {
 test("onlyOne without results", async () => {
 	await assert.rejects(
 		async () => await db.onlyOne`SELECT * FROM db_testing WHERE id = -1`,
-		ExactlyOneError,
+		OnlyOneError,
 	);
 });
 
