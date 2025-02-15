@@ -12,17 +12,13 @@
 		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
 		"build": "tsc",
 		"clean": "rm -rf dist",
-		"prepare": "rm -rf dist && tsc"
+		"prepare": "npm run fix; rm -rf dist; tsc"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/nalanj/pg-ist.git"
 	},
-	"keywords": [
-		"utilities",
-		"pg",
-		"postgresql"
-	],
+	"keywords": ["utilities", "pg", "postgresql"],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
@@ -43,9 +39,5 @@
 	"volta": {
 		"node": "22.14.0"
 	},
-	"files": [
-		"dist/**/*",
-		"README.md",
-		"LICENSE"
-	]
+	"files": ["dist/**/*", "README.md", "LICENSE"]
 }
