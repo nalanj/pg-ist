@@ -148,13 +148,7 @@ class DB implements Queryable {
  *
  *
  * @example
- * ```
- * const db = pgist({
- *   db: {
- *     connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
- *     connectionTimeoutMillis: 3000
- *   }
- * });
+ * {@includeCode examples/pgist.ts}
  * ```
  */
 export function pgist(config: PgistConfig) {
