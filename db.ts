@@ -4,7 +4,17 @@ import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
-export type PgistConfig = { db: pg.PoolConfig };
+/**
+ * Configuration for pg-ist
+ */
+export type PgistConfig = {
+	/**
+	 * Configuration for the underline node-postgres pool.
+	 * See [https://node-postgres.com/apis/pool](https://node-postgres.com/apis/pool)
+	 * for more details.
+	 */
+	db: pg.PoolConfig;
+};
 
 export type TxFn<T> = (txn: ReturnType<typeof tx>) => Promise<T>;
 export type Queryable = {
@@ -100,6 +110,11 @@ class DB implements Queryable {
 		return (props: P, tx?: Queryable) => fn(props, tx || this);
 	}
 
+	/**
+	 * Execute `fn` in a transaction.
+	 * @param fn - a function to run within a transaction
+	 * @returns the return value of fn
+	 */
 	async tx<T>(fn: TxFn<T>) {
 		const client = await this.pool.connect();
 		await client.query("BEGIN");
@@ -128,6 +143,9 @@ class DB implements Queryable {
 	}
 }
 
+/**
+ * Sets up a new database connection.
+ */
 export function pgist(config: PgistConfig) {
 	return new DB(config);
 }
