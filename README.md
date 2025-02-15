@@ -18,7 +18,7 @@ npm install pg-ist
 Use the `pgist` function to set up a new database connection. It accepts any
 settings for [`node-postgres` pools](https://node-postgres.com/apis/pool) under the `db` property:
 
-```
+```ts
 const db = pgist({
   db: { 
     connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
@@ -46,7 +46,7 @@ Query template strings automatically protect against sql injection.
 
 Returns an `Iterable` set of rows.
 
-```
+```ts
 const result = db.query<User>`SELECT * FROM users WHERE id = ${id}`;
 
 console.log(result.length);
@@ -60,7 +60,7 @@ for (const row of result) {
 
 Returns a single object, or `undefined`.
 
-```
+```ts
 const result = db.one<User>`SELECT * FROM users WHERE id = ${id}`;
 
 if (result !== undefined) {
@@ -73,8 +73,10 @@ if (result !== undefined) {
 Returns a single object or throws an `ExactlyOneError`. Useful in cases where
 if you don't get a result you know something's wrong.
 
+```ts
 const result = db.one<User>`SELECT * FROM users WHERE id = ${id}`;
 console.log(result.name);
+```
 
 ### Build queries
 
@@ -82,13 +84,13 @@ console.log(result.name);
 
 Build up queries with the `sql` function:
 
-```
+```ts
 const select = sql`SELECT * FROM users WHERE id = ${id}`;
 ```
 
 Queries can be safely combined by nesting:
 
-```
+```ts
 const limited = sql`${select} LIMIT ${limit}`;
 ```
 
@@ -96,7 +98,7 @@ const limited = sql`${select} LIMIT ${limit}`;
 
 Use `db.tx` to set up a transaction:
 
-```
+```ts
 const name = "Alan";
 age = 44;
 
@@ -128,7 +130,7 @@ it also causes the transaction to roll back.
 `pg-ist` includes the ability to efficiently define query functions. `queryFn`,
 `oneFn`, and `onlyOneFn` are all available.
 
-```
+```ts
 db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
 ```
 
