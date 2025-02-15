@@ -19,11 +19,13 @@ Use the `pgist` function to set up a new database connection. It accepts any
 settings for [`node-postgres` pools](https://node-postgres.com/apis/pool) under the `db` property:
 
 ```ts
+import { pgist } from "pg-ist";
+
 const db = pgist({
-  db: { 
-    connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
-		connectionTimeoutMillis: 3000
-  }
+	db: {
+		connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
+		connectionTimeoutMillis: 3000,
+	},
 });
 ```
 
@@ -47,12 +49,15 @@ Query template strings automatically protect against sql injection.
 Returns an `Iterable` set of rows.
 
 ```ts
-const result = db.query<User>`SELECT * FROM users WHERE id = ${id}`;
+import { type User, db } from "./db.js";
+
+const id = 5;
+const result = await db.query<User>`SELECT * FROM users WHERE id = ${id}`;
 
 console.log(result.length);
 
 for (const row of result) {
-  console.log(row.name);
+	console.log(row.name);
 }
 ```
 
@@ -61,10 +66,13 @@ for (const row of result) {
 Returns a single object, or `undefined`.
 
 ```ts
-const result = db.one<User>`SELECT * FROM users WHERE id = ${id}`;
+import { type User, db } from "./db.js";
+
+const id = 5;
+const result = await db.one<User>`SELECT * FROM users WHERE id = ${id}`;
 
 if (result !== undefined) {
-  console.log(result.name);
+	console.log(result.name);
 }
 ```
 
@@ -74,7 +82,10 @@ Returns a single object or throws an `OnlyOneError`. Useful in cases where
 if you don't get a result you know something's wrong.
 
 ```ts
-const result = db.one<User>`SELECT * FROM users WHERE id = ${id}`;
+import { type User, db } from "./db.js";
+
+const id = 5;
+const result = await db.onlyOne<User>`SELECT * FROM users WHERE id = ${id}`;
 console.log(result.name);
 ```
 
@@ -85,12 +96,21 @@ console.log(result.name);
 Build up queries with the `sql` function:
 
 ```ts
+import { sql } from "pg-ist";
+
+const id = 5;
 const select = sql`SELECT * FROM users WHERE id = ${id}`;
 ```
 
 Queries can be safely combined by nesting:
 
 ```ts
+import { sql } from "pg-ist";
+
+const id = 5;
+const select = sql`SELECT * FROM users WHERE id = ${id}`;
+
+const limit = 10;
 const limited = sql`${select} LIMIT ${limit}`;
 ```
 
@@ -99,24 +119,26 @@ const limited = sql`${select} LIMIT ${limit}`;
 Use `db.tx` to set up a transaction:
 
 ```ts
+import { type Pet, type User, db } from "./db.ts";
+
 const name = "Alan";
-age = 44;
+const age = 44;
 
-const pets = [{name: "Carmen"}, {name: "Alberta"}, {name: "Dewey"}]
+const pets = [{ name: "Carmen" }, { name: "Alberta" }, { name: "Dewey" }];
 
-const result = await db.tx(async(tx) => {
-  const user = await tx.one<User>`
+const result = await db.tx(async (tx) => {
+	const user = await tx.one<User>`
     INSERT INTO users (name, age) 
     VALUES (${name}, ${age})
     RETURNING *
   `;
 
-  const pets: Pet[] = [];
-  for (const pet of pets) {
-    pets.push(await tx.onlyOne`INSERT INTO pets (name) VALUES (${name})`);
-  }
-  
-  return { human: user, pets };
+	const pets: Pet[] = [];
+	for (const pet of pets) {
+		pets.push(await tx.onlyOne`INSERT INTO pets (name) VALUES (${name})`);
+	}
+
+	return { human: user, pets };
 });
 ```
 
@@ -131,6 +153,8 @@ it also causes the transaction to roll back.
 `oneFn`, and `onlyOneFn` are all available.
 
 ```ts
+import { type User, db } from "./db.js";
+
 db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
 ```
 
