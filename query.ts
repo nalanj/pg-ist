@@ -67,7 +67,7 @@ export async function query<T extends object>(
 export async function queryOne<T extends object>(
 	sql: pg.QueryConfig | string,
 	poolClient: pg.PoolClient,
-): Promise<T | null> {
+): Promise<T | undefined> {
 	const result = await queryInternal<T>(sql, poolClient);
 
 	const first = result[Symbol.iterator]().next();
@@ -75,10 +75,10 @@ export async function queryOne<T extends object>(
 		return first.value as T;
 	}
 
-	return null;
+	return undefined;
 }
 
-export async function queryExactlyOne<T extends object>(
+export async function queryOnlyOne<T extends object>(
 	sql: pg.QueryConfig | string,
 	poolClient: pg.PoolClient,
 ): Promise<T> {

@@ -1,5 +1,6 @@
 import pg from "pg";
-import { type QueryResult, query, queryExactlyOne, queryOne } from "./query.js";
+import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
+import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
@@ -14,7 +15,7 @@ export type Queryable = {
 	one: <T extends object>(
 		strings: TemplateStringsArray,
 		...argsIn: unknown[]
-	) => Promise<T | null>;
+	) => Promise<T | undefined>;
 
 	onlyOne: <T extends object>(
 		strings: TemplateStringsArray,
@@ -22,82 +23,110 @@ export type Queryable = {
 	) => Promise<T>;
 };
 
-export function pgist(
-	config: PgistConfig,
-): Queryable & { tx: <T>(fn: TxFn<T>) => Promise<T>; end: () => void } {
-	const pool = new pg.Pool(config);
+class DB implements Queryable {
+	pool: pg.Pool;
 
-	return {
-		query: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		): Promise<QueryResult<T>> => {
-			const q = sql(strings, ...argsIn);
+	constructor(config: PgistConfig) {
+		this.pool = new pg.Pool(config);
+	}
 
-			const client = await pool.connect();
+	async query<T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) {
+		const q = sql(strings, ...argsIn);
 
-			try {
-				return await query<T>(q, client);
-			} finally {
-				await client.release();
+		const client = await this.pool.connect();
+
+		try {
+			return await query<T>(q, client);
+		} finally {
+			client.release();
+		}
+	}
+
+	async one<T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) {
+		const q = sql(strings, ...argsIn);
+
+		const client = await this.pool.connect();
+
+		try {
+			return await queryOne<T>(q, client);
+		} finally {
+			await client.release();
+		}
+	}
+
+	async onlyOne<T extends object>(
+		strings: TemplateStringsArray,
+		...argsIn: unknown[]
+	) {
+		const q = sql(strings, ...argsIn);
+
+		const client = await this.pool.connect();
+
+		try {
+			return await queryOnlyOne<T>(q, client);
+		} finally {
+			await client.release();
+		}
+	}
+
+	queryFn<T extends object, P = Record<string, unknown>>(
+		strings: TemplateStringsArray,
+		...argsIn: (keyof P)[]
+	) {
+		const fn = queryFn(strings, ...argsIn);
+		return (props: P, tx?: Queryable) => fn(props, tx || this);
+	}
+
+	oneFn<T extends object, P = Record<string, unknown>>(
+		strings: TemplateStringsArray,
+		...argsIn: (keyof P)[]
+	) {
+		const fn = oneFn(strings, ...argsIn);
+		return (props: P, tx?: Queryable) => fn(props, tx || this);
+	}
+
+	onlyOneFn<T extends object, P = Record<string, unknown>>(
+		strings: TemplateStringsArray,
+		...argsIn: (keyof P)[]
+	) {
+		const fn = onlyOneFn(strings, ...argsIn);
+		return (props: P, tx?: Queryable) => fn(props, tx || this);
+	}
+
+	async tx<T>(fn: TxFn<T>) {
+		const client = await this.pool.connect();
+		await client.query("BEGIN");
+
+		const txn = tx(client);
+
+		let caught = false;
+		try {
+			return await fn(txn);
+		} catch (e) {
+			caught = true;
+			await txn.rollback();
+
+			throw e;
+		} finally {
+			if (!caught) {
+				await client.query("COMMIT");
 			}
-		},
 
-		one: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		) => {
-			const q = sql(strings, ...argsIn);
+			client.release();
+		}
+	}
 
-			const client = await pool.connect();
+	end() {
+		this.pool.end();
+	}
+}
 
-			try {
-				return await queryOne<T>(q, client);
-			} finally {
-				await client.release();
-			}
-		},
-
-		onlyOne: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		) => {
-			const q = sql(strings, ...argsIn);
-
-			const client = await pool.connect();
-
-			try {
-				return await queryExactlyOne<T>(q, client);
-			} finally {
-				await client.release();
-			}
-		},
-
-		tx: async (fn) => {
-			const client = await pool.connect();
-			await client.query("BEGIN");
-
-			const txn = tx(client);
-
-			let caught = false;
-			try {
-				return await fn(txn);
-			} catch (e) {
-				caught = true;
-				await txn.rollback();
-
-				throw e;
-			} finally {
-				if (!caught) {
-					await client.query("COMMIT");
-				}
-
-				client.release();
-			}
-		},
-
-		end: () => {
-			pool.end();
-		},
-	};
+export function pgist(config: PgistConfig) {
+	return new DB(config);
 }
