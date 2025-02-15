@@ -1,4 +1,4 @@
-import { pgist } from "pg-ist";
+import { pgist } from "../index.js";
 
 export type User = {
 	id: number;

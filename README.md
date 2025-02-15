@@ -160,6 +160,19 @@ db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
 
 This defines a function that accepts a properties object with one property, `id`, and returns an iterable set of `User` objects.
 
+## Cursors
+
+`pg-ist` supports cursors. They're ideal for situations where you need to iterate over large sets of rows.
+
+```ts
+import { type User, db } from "./db.js";
+
+const cursor = db.cursor(100);
+for await (const row of await cursor<User>`SELECT * FROM users`) {
+	console.log(row);
+}
+```
+
 ### Typedocs
 
 Read the full api documentation at [https://tsdocs.dev/docs/pg-ist/](https://tsdocs.dev/docs/pg-ist/)
