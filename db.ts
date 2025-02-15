@@ -145,11 +145,6 @@ class DB implements Queryable {
 
 /**
  * Sets up a new database connection.
- *
- *
- * @example
- * {@includeCode examples/pgist.ts}
- * ```
  */
 export function pgist(config: PgistConfig) {
 	return new DB(config);
