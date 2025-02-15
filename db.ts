@@ -22,9 +22,9 @@ export type Queryable = {
 	) => Promise<T>;
 };
 
-export function pgist(
-	config: PgistConfig,
-): Queryable & { tx: <T>(fn: TxFn<T>) => Promise<T>; end: () => void } {
+type DB = Queryable & { tx: <T>(fn: TxFn<T>) => Promise<T>; end: () => void };
+
+export function pgist(config: PgistConfig): DB {
 	const pool = new pg.Pool(config);
 
 	return {

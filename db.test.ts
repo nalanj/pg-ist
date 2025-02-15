@@ -20,7 +20,7 @@ type DbTesting = {
 };
 
 after(async () => {
-	await db.query<DbTesting>`DELETE FROM db_testing`;
+	await db.query`DELETE FROM db_testing`;
 	db.end();
 });
 
