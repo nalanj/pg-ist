@@ -56,7 +56,7 @@ test("onlyOne without results", async () => {
 });
 
 test("tx with success", async () => {
-	const inserted: DbTesting | null = await db.tx(async (c) => {
+	const inserted: DbTesting | undefined = await db.tx(async (c) => {
 		return await c.one<DbTesting>`INSERT INTO db_testing(name) VALUES (${"Tx Sally"}) RETURNING *`;
 	});
 
@@ -80,12 +80,12 @@ test("tx with rollback", async () => {
 
 	const result =
 		await db.one`SELECT * FROM db_testing WHERE id = ${inserted.id}`;
-	assert.strictEqual(result, null);
+	assert.strictEqual(result, undefined);
 });
 
 test("tx with exception", async () => {
 	let caught = false;
-	let inserted: DbTesting | null;
+	let inserted: DbTesting | undefined;
 
 	try {
 		await db.tx(async (tx) => {
@@ -98,7 +98,7 @@ test("tx with exception", async () => {
 	}
 
 	// since ts doesn't infer the type across the function boundary
-	inserted ||= null;
+	inserted ||= undefined;
 
 	assert.strictEqual(caught, true);
 
@@ -106,5 +106,5 @@ test("tx with exception", async () => {
 
 	const result =
 		await db.one`SELECT * FROM db_testing WHERE id = ${inserted.id}`;
-	assert.strictEqual(result, null);
+	assert.strictEqual(result, undefined);
 });

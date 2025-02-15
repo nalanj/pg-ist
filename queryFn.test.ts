@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
 import { pgist } from "./db.js";
-import { ExactlyOneError } from "./errors.js";
-import { oneFn, queryFn } from "./queryFn.js";
+import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { databaseUrl } from "./test-help.js";
 
 const db = pgist({
@@ -63,7 +62,7 @@ describe("oneFn", () => {
 });
 
 describe("onlyOneFn", () => {
-	const one = oneFn<
+	const onlyOne = onlyOneFn<
 		QueryFnTesting,
 		{ id: number }
 	>`SELECT * FROM queryfn_testing WHERE id = ${"id"}`;
@@ -72,7 +71,7 @@ describe("onlyOneFn", () => {
 		const inserted =
 			await db.onlyOne<QueryFnTesting>`INSERT INTO queryfn_testing(name) VALUES (${"Jimmy"}) RETURNING *`;
 
-		const found = await one({ id: inserted.id }, db);
+		const found = await onlyOne({ id: inserted.id }, db);
 
 		assert.ok(found !== undefined);
 		assert.equal(found.id, inserted.id);
@@ -80,8 +79,6 @@ describe("onlyOneFn", () => {
 	});
 
 	it("throws on no result", async () => {
-		assert.rejects(async () => await one({ id: -1 }, db), {
-			type: ExactlyOneError,
-		});
+		await assert.rejects(async () => await onlyOne({ id: -1 }, db));
 	});
 });
