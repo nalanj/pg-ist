@@ -32,5 +32,3 @@ export class UniqueConstraintError extends Error {
 		return new UniqueConstraintError(error.message, error.constraint);
 	}
 }
-
-db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
