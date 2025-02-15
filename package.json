@@ -30,7 +30,8 @@
 	},
 	"homepage": "https://github.com/nalanj/pg-ist#readme",
 	"dependencies": {
-		"pg": "8.13.3"
+		"pg": "8.13.3",
+		"pg-cursor": "2.12.3"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
