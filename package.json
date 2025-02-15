@@ -5,7 +5,7 @@
 	"exports": {
 		".": "./dist/index.js"
 	},
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"scripts": {
 		"fix": "biome check --write",
 		"test": "biome check && tsx --test",
@@ -18,7 +18,11 @@
 		"type": "git",
 		"url": "git+https://github.com/nalanj/pg-ist.git"
 	},
-	"keywords": ["utilities", "pg", "postgresql"],
+	"keywords": [
+		"utilities",
+		"pg",
+		"postgresql"
+	],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
@@ -39,5 +43,9 @@
 	"volta": {
 		"node": "22.14.0"
 	},
-	"files": ["dist/**/*", "README.md", "LICENSE"]
+	"files": [
+		"dist/**/*",
+		"README.md",
+		"LICENSE"
+	]
 }
