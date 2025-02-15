@@ -23,7 +23,7 @@
 		}
 	},
 	"files": {
-		"ignore": ["cardinal-marketing/public/client/"]
+		"ignore": ["package.json"]
 	},
 	"vcs": {
 		"enabled": true,

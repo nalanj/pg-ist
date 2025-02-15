@@ -18,11 +18,7 @@
 		"type": "git",
 		"url": "git+https://github.com/nalanj/pg-ist.git"
 	},
-	"keywords": [
-		"utilities",
-		"pg",
-		"postgresql"
-	],
+	"keywords": ["utilities", "pg", "postgresql"],
 	"author": "Alan Johnson",
 	"license": "MIT",
 	"bugs": {
