@@ -5,9 +5,11 @@ import { ExactlyOneError } from "./errors.js";
 import { databaseUrl } from "./test-help.js";
 
 const db = pgist({
-	connectionString: databaseUrl,
-	allowExitOnIdle: true,
-	connectionTimeoutMillis: 3000,
+	db: {
+		connectionString: databaseUrl,
+		allowExitOnIdle: true,
+		connectionTimeoutMillis: 3000,
+	},
 });
 
 before(async () => {

@@ -4,7 +4,8 @@ import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
-export type PgistConfig = pg.PoolConfig;
+export type PgistConfig = { db: pg.PoolConfig };
+
 export type TxFn<T> = (txn: ReturnType<typeof tx>) => Promise<T>;
 export type Queryable = {
 	query: <T extends object>(
@@ -27,7 +28,7 @@ class DB implements Queryable {
 	pool: pg.Pool;
 
 	constructor(config: PgistConfig) {
-		this.pool = new pg.Pool(config);
+		this.pool = new pg.Pool(config.db);
 	}
 
 	async query<T extends object>(
