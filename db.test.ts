@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { after, before, test } from "node:test";
+import { after, afterEach, before, test } from "node:test";
 import { pgist } from "./db.js";
 import { OnlyOneError } from "./errors.js";
 import { databaseUrl } from "./test-help.js";
@@ -12,17 +12,20 @@ const db = pgist({
 	},
 });
 
-before(async () => {
-	await db.query`CREATE TABLE IF NOT EXISTS db_testing (id SERIAL NOT NULL, name TEXT NOT NULL)`;
-});
-
 type DbTesting = {
 	id: number;
 	name: string;
 };
 
-after(async () => {
+before(async () => {
+	await db.query`CREATE TABLE IF NOT EXISTS db_testing (id SERIAL NOT NULL, name TEXT NOT NULL)`;
+});
+
+afterEach(async () => {
 	await db.query`DELETE FROM db_testing`;
+});
+
+after(() => {
 	db.end();
 });
 
