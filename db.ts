@@ -1,5 +1,5 @@
 import pg from "pg";
-import { type QueryResult, query, queryExactlyOne, queryOne } from "./query.js";
+import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
@@ -14,7 +14,7 @@ export type Queryable = {
 	one: <T extends object>(
 		strings: TemplateStringsArray,
 		...argsIn: unknown[]
-	) => Promise<T | null>;
+	) => Promise<T | undefined>;
 
 	onlyOne: <T extends object>(
 		strings: TemplateStringsArray,
@@ -67,7 +67,7 @@ export function pgist(config: PgistConfig): DB {
 			const client = await pool.connect();
 
 			try {
-				return await queryExactlyOne<T>(q, client);
+				return await queryOnlyOne<T>(q, client);
 			} finally {
 				await client.release();
 			}

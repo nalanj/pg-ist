@@ -1,6 +1,6 @@
 import type pg from "pg";
 import type { Queryable } from "./db.js";
-import { query, queryExactlyOne, queryOne } from "./query.js";
+import { query, queryOne, queryOnlyOne } from "./query.js";
 import { sql } from "./sql.js";
 
 export type Tx = Queryable & { rollback: () => Promise<void> };
@@ -33,7 +33,7 @@ export function tx(poolClient: pg.PoolClient): Tx {
 		) => {
 			const q = sql(strings, ...argsIn);
 
-			return await queryExactlyOne<T>(q, poolClient);
+			return await queryOnlyOne<T>(q, poolClient);
 		},
 
 		rollback: async () => {
