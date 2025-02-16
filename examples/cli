@@ -1,0 +1,8 @@
+#!/usr/bin/env -S npx tsx
+import { cli } from "../index.js";
+import { db } from "./db.js";
+
+const out = await cli(db, "cli");
+await db.end();
+
+process.exit(out);
