@@ -4,5 +4,5 @@ const id = 5;
 const result = await db.one<User>`SELECT * FROM users WHERE id = ${id}`;
 
 if (result !== undefined) {
-	console.log(result.name);
+  console.log(result.name);
 }

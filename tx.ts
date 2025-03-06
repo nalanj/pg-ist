@@ -6,42 +6,42 @@ import { sql } from "./sql.js";
 export type Tx = Queryable & { rollback: () => Promise<void> };
 
 export function tx(poolClient: pg.PoolClient): Tx {
-	let rolledBack = false;
+  let rolledBack = false;
 
-	return {
-		query: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		) => {
-			const q = sql(strings, ...argsIn);
+  return {
+    query: async <T extends object>(
+      strings: TemplateStringsArray,
+      ...argsIn: unknown[]
+    ) => {
+      const q = sql(strings, ...argsIn);
 
-			return await query<T>(q, poolClient);
-		},
+      return await query<T>(q, poolClient);
+    },
 
-		one: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		) => {
-			const q = sql(strings, ...argsIn);
+    one: async <T extends object>(
+      strings: TemplateStringsArray,
+      ...argsIn: unknown[]
+    ) => {
+      const q = sql(strings, ...argsIn);
 
-			return await queryOne<T>(q, poolClient);
-		},
+      return await queryOne<T>(q, poolClient);
+    },
 
-		onlyOne: async <T extends object>(
-			strings: TemplateStringsArray,
-			...argsIn: unknown[]
-		) => {
-			const q = sql(strings, ...argsIn);
+    onlyOne: async <T extends object>(
+      strings: TemplateStringsArray,
+      ...argsIn: unknown[]
+    ) => {
+      const q = sql(strings, ...argsIn);
 
-			return await queryOnlyOne<T>(q, poolClient);
-		},
+      return await queryOnlyOne<T>(q, poolClient);
+    },
 
-		rollback: async () => {
-			if (!rolledBack) {
-				await query("ROLLBACK;", poolClient);
-			}
+    rollback: async () => {
+      if (!rolledBack) {
+        await query("ROLLBACK;", poolClient);
+      }
 
-			rolledBack = true;
-		},
-	};
+      rolledBack = true;
+    },
+  };
 }

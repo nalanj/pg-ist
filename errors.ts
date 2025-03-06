@@ -5,30 +5,30 @@ import type pg from "pg";
  * returns no rows.
  */
 export class OnlyOneError extends Error {
-	constructor(m: string) {
-		super(m);
-		Object.setPrototypeOf(this, OnlyOneError.prototype);
-	}
+  constructor(m: string) {
+    super(m);
+    Object.setPrototypeOf(this, OnlyOneError.prototype);
+  }
 }
 
 /**
  * UniqueConstraintErrors are thrown when a unique constraint fails
  */
 export class UniqueConstraintError extends Error {
-	constraint;
+  constraint;
 
-	constructor(message: string, constraint: string) {
-		super(message);
-		this.constraint = constraint;
+  constructor(message: string, constraint: string) {
+    super(message);
+    this.constraint = constraint;
 
-		Object.setPrototypeOf(this, UniqueConstraintError.prototype);
-	}
+    Object.setPrototypeOf(this, UniqueConstraintError.prototype);
+  }
 
-	static fromDBError(error: pg.DatabaseError) {
-		if (!error.constraint) {
-			throw new Error("Created constraint error without constraint property");
-		}
+  static fromDBError(error: pg.DatabaseError) {
+    if (!error.constraint) {
+      throw new Error("Created constraint error without constraint property");
+    }
 
-		return new UniqueConstraintError(error.message, error.constraint);
-	}
+    return new UniqueConstraintError(error.message, error.constraint);
+  }
 }
