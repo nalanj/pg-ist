@@ -21,11 +21,19 @@ async function query(db: DB, argv: string[], cliName: string) {
 
 	const queryString = unsafe(argv[3]);
 
-	const cursor = db.cursor(25);
-	for await (const row of cursor`${queryString}`) {
-		console.log(JSON.stringify(row));
+	try {
+		const cursor = db.cursor(25);
+		for await (const row of cursor`${queryString}`) {
+			console.log(JSON.stringify(row));
+		}
+		console.log();
+	} catch (e) {
+		if (e instanceof Error) {
+			console.error(`Error: ${e.message}\n`);
+		} else {
+			console.error(`Error: ${e}\n`);
+		}
 	}
-	console.log();
 
 	return 0;
 }
