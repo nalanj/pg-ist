@@ -14,9 +14,7 @@ on:
       - CHANGELOG.md
       - LICENSE
       - .gitignore
-      - .npmignore      
-
-  
+      - .npmignore
 
 jobs:   
   build:
