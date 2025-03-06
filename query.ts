@@ -3,92 +3,92 @@ import { camelCase } from "./camel-case.js";
 import { OnlyOneError, UniqueConstraintError } from "./errors.js";
 
 export type QueryResult<T> = {
-	length: number;
-	[Symbol.iterator]: () => Iterator<T>;
+  length: number;
+  [Symbol.iterator]: () => Iterator<T>;
 };
 
 export function convertRow(row: Record<string, unknown>): unknown {
-	return Object.fromEntries(
-		Object.entries(row).map(([k, v]) => [camelCase(k), v]),
-	);
+  return Object.fromEntries(
+    Object.entries(row).map(([k, v]) => [camelCase(k), v]),
+  );
 }
 
 function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
-	return {
-		length: result.rows.length,
-		[Symbol.iterator]: () => {
-			let idx = -1;
+  return {
+    length: result.rows.length,
+    [Symbol.iterator]: () => {
+      let idx = -1;
 
-			return {
-				next: () => {
-					idx += 1;
+      return {
+        next: () => {
+          idx += 1;
 
-					if (idx < result.rows.length) {
-						return {
-							value: convertRow(result.rows[idx]) as T,
+          if (idx < result.rows.length) {
+            return {
+              value: convertRow(result.rows[idx]) as T,
 
-							done: false,
-						};
-					}
+              done: false,
+            };
+          }
 
-					return { done: true, value: undefined };
-				},
-			};
-		},
-	};
+          return { done: true, value: undefined };
+        },
+      };
+    },
+  };
 }
 
 async function queryInternal<T extends object>(
-	sql: pg.QueryConfig | string,
-	poolClient: pg.PoolClient,
+  sql: pg.QueryConfig | string,
+  poolClient: pg.PoolClient,
 ): Promise<QueryResult<T>> {
-	try {
-		let pgResult = await poolClient.query(sql);
+  try {
+    let pgResult = await poolClient.query(sql);
 
-		if (Array.isArray(pgResult)) {
-			pgResult = pgResult[pgResult.length - 1];
-		}
+    if (Array.isArray(pgResult)) {
+      pgResult = pgResult[pgResult.length - 1];
+    }
 
-		return queryResult<T>(pgResult);
-	} catch (e) {
-		if (e instanceof pg.DatabaseError && e.code === "23505") {
-			throw UniqueConstraintError.fromDBError(e);
-		}
+    return queryResult<T>(pgResult);
+  } catch (e) {
+    if (e instanceof pg.DatabaseError && e.code === "23505") {
+      throw UniqueConstraintError.fromDBError(e);
+    }
 
-		throw e;
-	}
+    throw e;
+  }
 }
 
 export async function query<T extends object>(
-	sql: pg.QueryConfig | string,
-	poolClient: pg.PoolClient,
+  sql: pg.QueryConfig | string,
+  poolClient: pg.PoolClient,
 ) {
-	return await queryInternal<T>(sql, poolClient);
+  return await queryInternal<T>(sql, poolClient);
 }
 
 export async function queryOne<T extends object>(
-	sql: pg.QueryConfig | string,
-	poolClient: pg.PoolClient,
+  sql: pg.QueryConfig | string,
+  poolClient: pg.PoolClient,
 ): Promise<T | undefined> {
-	const result = await queryInternal<T>(sql, poolClient);
+  const result = await queryInternal<T>(sql, poolClient);
 
-	const first = result[Symbol.iterator]().next();
-	if (first.value) {
-		return first.value as T;
-	}
+  const first = result[Symbol.iterator]().next();
+  if (first.value) {
+    return first.value as T;
+  }
 
-	return undefined;
+  return undefined;
 }
 
 export async function queryOnlyOne<T extends object>(
-	sql: pg.QueryConfig | string,
-	poolClient: pg.PoolClient,
+  sql: pg.QueryConfig | string,
+  poolClient: pg.PoolClient,
 ): Promise<T> {
-	const result = await queryOne<T>(sql, poolClient);
+  const result = await queryOne<T>(sql, poolClient);
 
-	if (!result) {
-		throw new OnlyOneError("queryExactlyOne returned no rows");
-	}
+  if (!result) {
+    throw new OnlyOneError("queryExactlyOne returned no rows");
+  }
 
-	return result;
+  return result;
 }

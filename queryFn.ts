@@ -6,34 +6,34 @@ type OneFn<T, P> = (props: P, dbOrTx: Queryable) => Promise<T | undefined>;
 type OnlyOneFn<T, P> = (props: P, dbOrTx: Queryable) => Promise<T>;
 
 export function queryFn<T extends object, P = Record<string, unknown>>(
-	strings: TemplateStringsArray,
-	...argsIn: (keyof P)[]
+  strings: TemplateStringsArray,
+  ...argsIn: (keyof P)[]
 ): QueryFn<T, P> {
-	return (props: P, dbOrTx: Queryable) => {
-		const args = argsIn.map((arg) => props[arg]);
+  return (props: P, dbOrTx: Queryable) => {
+    const args = argsIn.map((arg) => props[arg]);
 
-		return dbOrTx.query<T>(strings, ...args);
-	};
+    return dbOrTx.query<T>(strings, ...args);
+  };
 }
 
 export function oneFn<T extends object, P = Record<string, unknown>>(
-	strings: TemplateStringsArray,
-	...argsIn: (keyof P)[]
+  strings: TemplateStringsArray,
+  ...argsIn: (keyof P)[]
 ): OneFn<T, P> {
-	return (props: P, dbOrTx: Queryable) => {
-		const args = argsIn.map((arg) => props[arg]);
+  return (props: P, dbOrTx: Queryable) => {
+    const args = argsIn.map((arg) => props[arg]);
 
-		return dbOrTx.one<T>(strings, ...args);
-	};
+    return dbOrTx.one<T>(strings, ...args);
+  };
 }
 
 export function onlyOneFn<T extends object, P = Record<string, unknown>>(
-	strings: TemplateStringsArray,
-	...argsIn: (keyof P)[]
+  strings: TemplateStringsArray,
+  ...argsIn: (keyof P)[]
 ): OnlyOneFn<T, P> {
-	return (props: P, dbOrTx: Queryable) => {
-		const args = argsIn.map((arg) => props[arg]);
+  return (props: P, dbOrTx: Queryable) => {
+    const args = argsIn.map((arg) => props[arg]);
 
-		return dbOrTx.onlyOne<T>(strings, ...args);
-	};
+    return dbOrTx.onlyOne<T>(strings, ...args);
+  };
 }

@@ -22,10 +22,10 @@ settings for [`node-postgres` pools](https://node-postgres.com/apis/pool) under 
 import { pgist } from "pg-ist";
 
 const db = pgist({
-	db: {
-		connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
-		connectionTimeoutMillis: 3000,
-	},
+  db: {
+    connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
+    connectionTimeoutMillis: 3000,
+  },
 });
 ```
 
@@ -57,7 +57,7 @@ const result = await db.query<User>`SELECT * FROM users WHERE id = ${id}`;
 console.log(result.length);
 
 for (const row of result) {
-	console.log(row.name);
+  console.log(row.name);
 }
 ```
 
@@ -72,7 +72,7 @@ const id = 5;
 const result = await db.one<User>`SELECT * FROM users WHERE id = ${id}`;
 
 if (result !== undefined) {
-	console.log(result.name);
+  console.log(result.name);
 }
 ```
 
@@ -127,18 +127,18 @@ const age = 44;
 const pets = [{ name: "Carmen" }, { name: "Alberta" }, { name: "Dewey" }];
 
 const result = await db.tx(async (tx) => {
-	const user = await tx.one<User>`
+  const user = await tx.one<User>`
     INSERT INTO users (name, age) 
     VALUES (${name}, ${age})
     RETURNING *
   `;
 
-	const pets: Pet[] = [];
-	for (const pet of pets) {
-		pets.push(await tx.onlyOne`INSERT INTO pets (name) VALUES (${name})`);
-	}
+  const pets: Pet[] = [];
+  for (const pet of pets) {
+    pets.push(await tx.onlyOne`INSERT INTO pets (name) VALUES (${name})`);
+  }
 
-	return { human: user, pets };
+  return { human: user, pets };
 });
 ```
 
@@ -169,7 +169,7 @@ import { type User, db } from "./db.js";
 
 const cursor = db.cursor(100);
 for await (const row of await cursor<User>`SELECT * FROM users`) {
-	console.log(row);
+  console.log(row);
 }
 ```
 

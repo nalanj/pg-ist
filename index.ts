@@ -1,8 +1,8 @@
 export { pgist } from "./db.js";
 export { sql, unsafe } from "./sql.js";
 export {
-	UniqueConstraintError,
-	OnlyOneError,
+  UniqueConstraintError,
+  OnlyOneError,
 } from "./errors.js";
 export { cli } from "./cli.js";
 
