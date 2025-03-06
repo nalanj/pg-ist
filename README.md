@@ -160,7 +160,7 @@ db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
 
 This defines a function that accepts a properties object with one property, `id`, and returns an iterable set of `User` objects.
 
-## Cursors
+### Cursors
 
 `pg-ist` supports cursors. They're ideal for situations where you need to iterate over large sets of rows.
 
@@ -173,7 +173,38 @@ for await (const row of await cursor<User>`SELECT * FROM users`) {
 }
 ```
 
-### Typedocs
+## CLI
+
+pgist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it in code.
+
+Here's an example CLI script:
+
+```
+#!/usr/bin/env -S npx tsx
+import { cli } from "../index.js";
+import { db } from "./db.js";
+
+const out = await cli(db, "cli");
+await db.end();
+
+process.exit(out);
+
+```
+
+### CLI Commands
+
+#### `[cli] query "[sql]"`
+
+Runs a query and returns the results as newline delimited json.
+
+```sh
+> examples/cli query "SELECT * FROM db_testing"             
+{"id":1187,"name":"BOB"}
+{"id":1188,"name":"SALLY"}
+{"id":1189,"name":"EUNICE"}
+```
+
+## Typedocs
 
 Read the full api documentation at [https://tsdocs.dev/docs/pg-ist/](https://tsdocs.dev/docs/pg-ist/)
 

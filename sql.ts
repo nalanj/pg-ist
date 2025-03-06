@@ -1,20 +1,28 @@
-const SQL = Symbol("SQL");
-
-export type SQL = {
-	[SQL]: true;
+class SQLQuery {
 	strings: string[];
 	values: unknown[];
-	text: string;
-};
 
-function isSQL(arg: unknown): arg is SQL {
-	return (arg as SQL)[SQL] === true;
+	constructor(strings: string[], values: unknown[]) {
+		this.strings = strings;
+		this.values = values;
+	}
+
+	get text() {
+		let out = "";
+		this.strings.slice(0, -1).forEach((string, idx) => {
+			out += `${string}$${idx + 1}`;
+		});
+
+		out += this.strings[this.strings.length - 1];
+
+		return out;
+	}
 }
 
 export function sql(
 	stringsIn: TemplateStringsArray,
 	...argsIn: unknown[]
-): SQL {
+): SQLQuery {
 	const values: unknown[] = [];
 	const strings: string[] = [];
 
@@ -22,21 +30,14 @@ export function sql(
 		const firstString = stringsIn[0];
 
 		// short circuit when no args
-		return {
-			[SQL]: true,
-			strings: [firstString],
-			values,
-			get text(): string {
-				return firstString;
-			},
-		};
+		return new SQLQuery([firstString], values);
 	}
 
 	let outOffset = 0;
 	for (let inOffset = 0; inOffset < argsIn.length; inOffset++) {
 		const arg = argsIn[inOffset];
 
-		if (isSQL(arg)) {
+		if (arg instanceof SQLQuery) {
 			// merge the opening string of the query arg into the previous string
 			strings[outOffset] = strings[outOffset]
 				? strings[outOffset] + (stringsIn[inOffset] ?? "") + arg.strings[0]
@@ -62,34 +63,9 @@ export function sql(
 		}
 	}
 
-	return {
-		[SQL]: true,
-		strings,
-		values,
-		get text() {
-			return queryText(strings);
-		},
-	};
+	return new SQLQuery(strings, values);
 }
 
-function queryText(strings: string[]) {
-	let out = "";
-	strings.slice(0, -1).forEach((string, idx) => {
-		out += `${string}$${idx + 1}`;
-	});
-
-	out += strings[strings.length - 1];
-
-	return out;
-}
-
-export function unsafe(unsafeString: string): SQL {
-	return {
-		[SQL]: true,
-		strings: [unsafeString],
-		values: [],
-		get text() {
-			return unsafeString;
-		},
-	};
+export function unsafe(unsafeString: string): SQLQuery {
+	return new SQLQuery([unsafeString], []);
 }

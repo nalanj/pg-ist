@@ -36,7 +36,7 @@ export type Queryable = {
 	) => Promise<T>;
 };
 
-class DB implements Queryable {
+export class DB implements Queryable {
 	pool: pg.Pool;
 
 	constructor(config: PgistConfig) {
