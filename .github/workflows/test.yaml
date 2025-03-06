@@ -8,13 +8,6 @@ on:
       - LICENSE
       - .gitignore
       - .npmignore
-  pull_request:
-    paths-ignore:
-      - README.md
-      - CHANGELOG.md
-      - LICENSE
-      - .gitignore
-      - .npmignore
 
 jobs:   
   build:
