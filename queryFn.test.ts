@@ -1,16 +1,9 @@
 import assert from "node:assert/strict";
 import { after, before, describe, it } from "node:test";
-import { pgist } from "./db.js";
 import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
-import { databaseUrl } from "./test-help.js";
+import { testDB } from "./test-help.js";
 
-const db = pgist({
-  db: {
-    connectionString: databaseUrl,
-    allowExitOnIdle: true,
-    connectionTimeoutMillis: 3000,
-  },
-});
+const db = testDB();
 
 type QueryFnTesting = {
   id: number;
