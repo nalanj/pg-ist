@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { beforeEach, describe, it } from "node:test";
+import { afterEach, beforeEach, describe, it } from "node:test";
 import {
   type MigrationRow,
   availableMigrations,
@@ -10,10 +10,16 @@ import {
   latestMigration,
   migrationRegex,
   pendingMigrations,
+  runMigration,
 } from "./migrate.js";
 import { testDB } from "./test-help";
 
 const db = testDB();
+
+type Org = {
+  id: number;
+  name: string;
+};
 
 const basicMigrations = [
   {
@@ -134,6 +140,32 @@ describe("migrations", () => {
       assert.equal(await createMigration("./tmp", "colission"), undefined);
 
       await fs.rm(filename);
+    });
+  });
+
+  describe("runMigration", () => {
+    afterEach(async () => {
+      await db.query`DROP TABLE IF EXISTS orgs`;
+    });
+
+    it("runs a migration", async () => {
+      const migrationPath = {
+        path: "./fixtures/migrations/basic/20241231011345-create-orgs.js",
+        id: "20241231011345",
+      };
+
+      await runMigration(db, migrationPath);
+
+      const result = await db.one<MigrationRow>`SELECT * FROM migrations`;
+      assert.ok(result !== undefined);
+      assert.equal(result.id, migrationPath.id);
+      assert.notEqual(result.createdAt, null);
+
+      const org =
+        await db.one<Org>`INSERT INTO orgs (name) VALUES ('Migration Runners') RETURNING *`;
+
+      assert.ok(org !== undefined);
+      assert.equal(org.name, "Migration Runners");
     });
   });
 });

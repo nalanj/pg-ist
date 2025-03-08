@@ -100,3 +100,26 @@ export async function createMigration(
 
   return filename;
 }
+
+export async function runMigration(db: Queryable, migration: MigrationPath) {
+  const migrationModule = await import(migration.path);
+  if (!migrationModule.default) {
+    throw new Error(
+      `The migration defined at ${migration.path} has no default export`,
+    );
+  }
+
+  await createMigrationsTable(db);
+
+  const latest = await latestMigration(db);
+
+  // just a final check to ensure we're not doing something really bad here
+  // by running a migration that has already been run
+  if (latest && latest.id >= migration.id) {
+    throw new Error("Migration already run");
+  }
+
+  await migrationModule.default(db);
+
+  await insertMigration(db, migration.id);
+}
