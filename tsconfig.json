@@ -18,6 +18,6 @@
     "lib": ["es2022"]
   },
 
-  "include": ["**/*.ts", "cli.ts"],
+  "include": ["**/*.ts", "cli/index.ts"],
   "exclude": ["dist", "examples", "node_modules", "**/*.test.ts"]
 }
