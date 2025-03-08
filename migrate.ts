@@ -93,7 +93,10 @@ export async function createMigration(
   }
 
   // we don't generate anything in the file
-  await fs.writeFile(filename, "");
+  await fs.writeFile(
+    filename,
+    'import { Queryable } from "@nalanj/pg-ist";\n\nexport default async function up(db: Queryable) {}',
+  );
 
   return filename;
 }
