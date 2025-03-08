@@ -1,7 +1,6 @@
 {
-  "erasableSyntaxOnly": true,
-
   "compilerOptions": {
+    "erasableSyntaxOnly": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "es2022",
