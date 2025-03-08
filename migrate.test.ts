@@ -7,6 +7,7 @@ import {
   availableMigrations,
   createMigration,
   createMigrationsTable,
+  insertMigration,
   latestMigration,
   migrationRegex,
   pendingMigrations,
@@ -166,6 +167,18 @@ describe("migrations", () => {
 
       assert.ok(org !== undefined);
       assert.equal(org.name, "Migration Runners");
+    });
+
+    it("throws if migration has already been run", async () => {
+      const migrationPath = {
+        path: "./fixtures/migrations/basic/20241231011345-create-orgs.js",
+        id: "20241231011345",
+      };
+
+      await createMigrationsTable(db);
+      await insertMigration(db, migrationPath.id);
+
+      await assert.rejects(runMigration(db, migrationPath));
     });
   });
 });
