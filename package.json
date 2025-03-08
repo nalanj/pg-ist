@@ -8,7 +8,8 @@
 	"version": "0.0.11",
 	"scripts": {
 		"fix": "biome check --write",
-		"test": "biome check && tsx --test",
+    "lint": "biome check",
+		"test": "tsx --test",
 		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
 		"build": "tsc",
 		"clean": "rm -rf dist",
