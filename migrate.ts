@@ -81,6 +81,7 @@ function migrationDate() {
 export async function createMigration(
   migrationPath: string,
   name: string,
+  typescript = false,
 ): Promise<string | undefined> {
   const filename = path.join(migrationPath, `${migrationDate()}-${name}.js`);
 
@@ -94,10 +95,11 @@ export async function createMigration(
   }
 
   // we don't generate anything in the file
-  await fs.writeFile(
-    filename,
-    'import { Queryable } from "@nalanj/pg-ist";\n\nexport default async function up(db: Queryable) {}',
-  );
+  const content = typescript
+    ? 'import { type Queryable } from "@nalanj/pg-ist";\n\nexport default async function up(db: Queryable) {}'
+    : "export default async function up(db) {}";
+
+  await fs.writeFile(filename, content);
 
   return filename;
 }

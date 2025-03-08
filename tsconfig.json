@@ -1,4 +1,6 @@
 {
+  "erasableSyntaxOnly": true,
+
   "compilerOptions": {
     "esModuleInterop": true,
     "skipLibCheck": true,
