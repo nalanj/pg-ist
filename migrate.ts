@@ -37,16 +37,18 @@ export async function availableMigrations(
 ): Promise<MigrationPath[]> {
   const fileNames = await fs.readdir(migrationPath);
 
-  return fileNames.flatMap<MigrationPath>((filename) => {
-    const match = filename.match(migrationRegex);
+  return fileNames
+    .flatMap<MigrationPath>((filename) => {
+      const match = filename.match(migrationRegex);
 
-    if (!match) {
-      return [];
-    }
+      if (!match) {
+        return [];
+      }
 
-    return {
-      path: path.resolve(process.cwd(), path.join(migrationPath, filename)),
-      id: match[1] as string,
-    };
-  });
+      return {
+        path: path.resolve(process.cwd(), path.join(migrationPath, filename)),
+        id: match[1] as string,
+      };
+    })
+    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
