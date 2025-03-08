@@ -33,14 +33,14 @@ const basicMigrations = [
   {
     path: path.join(
       process.cwd(),
-      "fixtures/migrations/basic/20250302090823-create-docs.js",
+      "fixtures/migrations/basic/20250302090823-create-docs.ts",
     ),
     id: "20250302090823",
   },
   {
     path: path.join(
       process.cwd(),
-      "fixtures/migrations/basic/20250307212006-create-users.js",
+      "fixtures/migrations/basic/20250307212006-create-users.mjs",
     ),
     id: "20250307212006",
   },

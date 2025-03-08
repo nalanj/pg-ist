@@ -12,6 +12,8 @@ export type MigrationPath = {
   id: string;
 };
 
+export const migrationRegex = /^(\d{14})-(.*)\.[cm]?[tj]s$/;
+
 export async function createMigrationsTable(db: Queryable) {
   await db.query`
     CREATE TABLE IF NOT EXISTS migrations (
@@ -31,7 +33,6 @@ export async function latestMigration(db: Queryable) {
   `;
 }
 
-export const migrationRegex = /^(\d{14})-(.*)\.js$/;
 export async function availableMigrations(
   migrationPath: string,
 ): Promise<MigrationPath[]> {
