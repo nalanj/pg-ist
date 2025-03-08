@@ -28,9 +28,13 @@ export async function insertMigration(db: Queryable, id: string) {
 }
 
 export async function latestMigration(db: Queryable) {
-  return await db.one<MigrationRow>`
+  try {
+    return await db.one<MigrationRow>`
     SELECT * FROM migrations ORDER BY id DESC LIMIT 1
   `;
+  } catch {
+    return undefined;
+  }
 }
 
 export async function availableMigrations(

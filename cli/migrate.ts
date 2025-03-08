@@ -1,11 +1,28 @@
 import type { DB } from "../db.js";
 import { createMigrationCommand } from "./create-migration.js";
 import type { CLIOptions } from "./index.js";
+import { migrationStatusCommand } from "./migration-status.js";
+import { pendingMigrationsCommand } from "./pending-migrations.js";
 
 const migrateSubcommands = {
   create: {
     desc: "Create a new migration",
     fn: createMigrationCommand,
+  },
+  status: {
+    desc: "Show migration status",
+    fn: migrationStatusCommand,
+  },
+  pending: {
+    desc: "List pending migrations",
+    fn: pendingMigrationsCommand,
+  },
+  run: {
+    desc: "Run all pending migrations",
+    fn: () => {
+      console.log("NOT BUILT");
+      return 1;
+    },
   },
 };
 
