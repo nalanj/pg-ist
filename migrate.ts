@@ -83,7 +83,10 @@ export async function createMigration(
   name: string,
   typescript = false,
 ): Promise<string | undefined> {
-  const filename = path.join(migrationPath, `${migrationDate()}-${name}.js`);
+  const filename = path.join(
+    migrationPath,
+    `${migrationDate()}-${name}.${typescript ? "ts" : "js"}`,
+  );
 
   try {
     const stat = await fs.stat(filename);
