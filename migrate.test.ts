@@ -6,10 +6,35 @@ import {
   availableMigrations,
   createMigrationsTable,
   latestMigration,
+  pendingMigrations,
 } from "./migrate.js";
 import { testDB } from "./test-help";
 
 const db = testDB();
+
+const basicMigrations = [
+  {
+    path: path.join(
+      process.cwd(),
+      "fixtures/migrations/basic/20241231011345-create-orgs.js",
+    ),
+    id: "20241231011345",
+  },
+  {
+    path: path.join(
+      process.cwd(),
+      "fixtures/migrations/basic/20250302090823-create-docs.js",
+    ),
+    id: "20250302090823",
+  },
+  {
+    path: path.join(
+      process.cwd(),
+      "fixtures/migrations/basic/20250307212006-create-users.js",
+    ),
+    id: "20250307212006",
+  },
+];
 
 describe("migrations", () => {
   beforeEach(async () => {
@@ -60,29 +85,27 @@ describe("migrations", () => {
       );
 
       assert.equal(migrations.length, 3);
-      assert.deepEqual(migrations, [
-        {
-          path: path.join(
-            process.cwd(),
-            "fixtures/migrations/basic/20241231011345-create-orgs.js",
-          ),
-          id: "20241231011345",
-        },
-        {
-          path: path.join(
-            process.cwd(),
-            "fixtures/migrations/basic/20250302090823-create-docs.js",
-          ),
-          id: "20250302090823",
-        },
-        {
-          path: path.join(
-            process.cwd(),
-            "fixtures/migrations/basic/20250307212006-create-users.js",
-          ),
-          id: "20250307212006",
-        },
-      ]);
+      assert.deepEqual(migrations, basicMigrations);
+    });
+  });
+
+  describe("pendingMigrations", () => {
+    it("gets pending migrations", async () => {
+      await createMigrationsTable(db);
+      await db.query`INSERT INTO migrations (id) VALUES ('20241231011345')`;
+
+      const migrations = await availableMigrations(
+        "./fixtures/migrations/basic/",
+      );
+
+      assert.equal(migrations.length, 3);
+
+      const latest = await latestMigration(db);
+      assert.ok(latest !== undefined);
+
+      const pending = pendingMigrations(migrations, latest);
+      assert.equal(pending.length, 2);
+      assert.deepEqual(pending, [basicMigrations[1], basicMigrations[2]]);
     });
   });
 });

@@ -52,3 +52,22 @@ export async function availableMigrations(
     })
     .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
 }
+
+export function pendingMigrations(
+  available: MigrationPath[],
+  latest?: MigrationRow,
+): MigrationPath[] {
+  if (!latest) {
+    return available;
+  }
+
+  const firstNotRun = available.findIndex(
+    (migration) => migration.id > latest.id,
+  );
+
+  if (!firstNotRun) {
+    return [];
+  }
+
+  return available.slice(firstNotRun);
+}
