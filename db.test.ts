@@ -1,16 +1,9 @@
 import assert from "node:assert";
 import { after, afterEach, before, test } from "node:test";
-import { pgist } from "./db.js";
 import { OnlyOneError } from "./errors.js";
-import { databaseUrl } from "./test-help.js";
+import { testDB } from "./test-help.js";
 
-const db = pgist({
-  db: {
-    connectionString: databaseUrl,
-    allowExitOnIdle: true,
-    connectionTimeoutMillis: 3000,
-  },
-});
+const db = testDB();
 
 type DbTesting = {
   id: number;
