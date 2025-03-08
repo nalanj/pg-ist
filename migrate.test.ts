@@ -1,11 +1,14 @@
 import assert from "node:assert";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { beforeEach, describe, it } from "node:test";
 import {
   type MigrationRow,
   availableMigrations,
+  createMigration,
   createMigrationsTable,
   latestMigration,
+  migrationRegex,
   pendingMigrations,
 } from "./migrate.js";
 import { testDB } from "./test-help";
@@ -106,6 +109,31 @@ describe("migrations", () => {
       const pending = pendingMigrations(migrations, latest);
       assert.equal(pending.length, 2);
       assert.deepEqual(pending, [basicMigrations[1], basicMigrations[2]]);
+    });
+  });
+
+  describe("createMigration", () => {
+    it("creates a migration", async () => {
+      const filename = await createMigration("./tmp", "create-works");
+
+      assert.ok(filename !== undefined);
+      const base = path.basename(filename);
+      assert.ok(migrationRegex.test(base));
+      assert.ok(base.endsWith("create-works.js"));
+
+      const stat = await fs.stat(filename);
+      assert.ok(stat.isFile());
+      await fs.rm(filename);
+    });
+
+    it("returns undefined if migration already exists", async (t) => {
+      t.mock.timers.enable({ apis: ["Date"] });
+      const filename = await createMigration("./tmp", "colission");
+      assert.ok(filename !== undefined);
+
+      assert.equal(await createMigration("./tmp", "colission"), undefined);
+
+      await fs.rm(filename);
     });
   });
 });

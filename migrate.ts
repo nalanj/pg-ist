@@ -31,7 +31,7 @@ export async function latestMigration(db: Queryable) {
   `;
 }
 
-const migrationRegex = /^(\d{14})-(.*)\.js$/;
+export const migrationRegex = /^(\d{14})-(.*)\.js$/;
 export async function availableMigrations(
   migrationPath: string,
 ): Promise<MigrationPath[]> {
@@ -70,4 +70,30 @@ export function pendingMigrations(
   }
 
   return available.slice(firstNotRun);
+}
+
+function migrationDate() {
+  const date = new Date();
+  return date.toISOString().replace(/[-:T]/g, "").split(".")[0];
+}
+
+export async function createMigration(
+  migrationPath: string,
+  name: string,
+): Promise<string | undefined> {
+  const filename = path.join(migrationPath, `${migrationDate()}-${name}.js`);
+
+  try {
+    const stat = await fs.stat(filename);
+    if (stat) {
+      return;
+    }
+  } catch {
+    // file isn't there yet
+  }
+
+  // we don't generate anything in the file
+  await fs.writeFile(filename, "");
+
+  return filename;
 }
