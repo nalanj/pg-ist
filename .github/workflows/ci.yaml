@@ -1,0 +1,29 @@
+name: CI
+
+on: 
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - README.md
+      - LICENSE
+      - .gitignore
+      - .npmignore
+
+jobs:   
+  ci:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: echo NODE_VERSION=$(jq -r .volta.node package.json) >> $GITHUB_ENV
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run citest
