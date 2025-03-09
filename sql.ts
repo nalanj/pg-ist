@@ -109,3 +109,23 @@ export function insertValues<const InsertFields extends [string, ...string[]]>(
 
   return sql`(${columns}) VALUES ${values}`;
 }
+
+export function updateValues<const UpdateFields extends [string, ...string[]]>(
+  fields: UpdateFields,
+  setValues: Record<string, unknown>,
+): SQLQuery {
+  if (fields.length <= 0) {
+    throw new Error("Cannot generate update for no fields");
+  }
+
+  const set = sql`SET`;
+  for (const field of fields) {
+    set.strings[set.strings.length - 1] =
+      `${set.strings[set.strings.length - 1]} ${pg.escapeIdentifier(snakeCase(field))} = `;
+    set.values.push((setValues[field] as unknown) || null);
+    set.strings.push(",");
+  }
+  set.strings[set.strings.length - 1] = "";
+
+  return set;
+}
