@@ -1,4 +1,4 @@
-import pg from "pg";
+import pg, { type QueryArrayConfig } from "pg";
 import { camelCase } from "./camel-case.js";
 import { OnlyOneError, UniqueConstraintError } from "./errors.js";
 
@@ -7,13 +7,38 @@ export type QueryResult<T> = {
   [Symbol.iterator]: () => Iterator<T>;
 };
 
-export function convertRow(row: Record<string, unknown>): unknown {
-  return Object.fromEntries(
-    Object.entries(row).map(([k, v]) => [camelCase(k), v]),
-  );
+export function cursorRowConverter(
+  row: Record<string, unknown> | undefined,
+): (row: Record<string, unknown>) => Record<string, unknown> {
+  if (row === undefined) {
+    return () => ({});
+  }
+
+  const keys = Object.keys(row);
+  const caseMap = keys.reduce<Record<string, string>>((acc, key) => {
+    acc[key] = camelCase(key);
+    return acc;
+  }, {});
+
+  return (row) =>
+    Object.fromEntries(Object.entries(row).map(([k, v]) => [caseMap[k], v]));
+}
+
+export function rowConverter(
+  fields: pg.FieldDef[],
+): (row: unknown[]) => unknown {
+  const fieldNames = fields.map((field) => camelCase(field.name));
+
+  return (row) => {
+    return Object.fromEntries(
+      fieldNames.map((fieldName, i) => [fieldName, row[i]]),
+    );
+  };
 }
 
 function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
+  const transform = rowConverter(result.fields);
+
   return {
     length: result.rows.length,
     [Symbol.iterator]: () => {
@@ -25,8 +50,7 @@ function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
 
           if (idx < result.rows.length) {
             return {
-              value: convertRow(result.rows[idx]) as T,
-
+              value: transform(result.rows[idx]) as T,
               done: false,
             };
           }
@@ -39,12 +63,21 @@ function queryResult<T>(result: pg.QueryResult): QueryResult<T> {
 }
 
 async function queryInternal<T extends object>(
-  sql: pg.QueryConfig | string,
+  sql: pg.QueryArrayConfig | string,
   poolClient: pg.PoolClient,
 ): Promise<QueryResult<T>> {
   try {
-    let pgResult = await poolClient.query(sql);
+    let query: QueryArrayConfig;
+    if (typeof sql === "string") {
+      query = { text: sql, rowMode: "array" };
+    } else {
+      query = sql;
+    }
 
+    let pgResult = await poolClient.query(query);
+
+    // if the query included multiple queries, only return the results of the
+    // last one
     if (Array.isArray(pgResult)) {
       pgResult = pgResult[pgResult.length - 1];
     }
@@ -60,14 +93,14 @@ async function queryInternal<T extends object>(
 }
 
 export async function query<T extends object>(
-  sql: pg.QueryConfig | string,
+  sql: pg.QueryArrayConfig | string,
   poolClient: pg.PoolClient,
 ) {
   return await queryInternal<T>(sql, poolClient);
 }
 
 export async function queryOne<T extends object>(
-  sql: pg.QueryConfig | string,
+  sql: pg.QueryArrayConfig | string,
   poolClient: pg.PoolClient,
 ): Promise<T | undefined> {
   const result = await queryInternal<T>(sql, poolClient);
@@ -81,7 +114,7 @@ export async function queryOne<T extends object>(
 }
 
 export async function queryOnlyOne<T extends object>(
-  sql: pg.QueryConfig | string,
+  sql: pg.QueryArrayConfig | string,
   poolClient: pg.PoolClient,
 ): Promise<T> {
   const result = await queryOne<T>(sql, poolClient);

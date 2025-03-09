@@ -27,6 +27,7 @@ test("query", async () => {
     await db.query<DbTesting>`INSERT INTO db_testing(name) VALUES (${"Jimmy"}) RETURNING *`;
 
   const rows = Array.from(result);
+
   assert.ok(rows[0]);
   assert.deepStrictEqual(rows, [{ id: rows[0].id, name: "Jimmy" }]);
 });
@@ -109,13 +110,13 @@ test("tx with exception", async () => {
 
 test("cursor", async () => {
   for (let i = 0; i < 150; i++) {
-    await db.one`INSERT INTO db_testing(name) VALUES (${`Human ${i}`}) RETURNING *`;
+    await db.one`INSERT INTO db_testing(name) VALUES (${`Human ${i}`})`;
   }
 
   const lowest = 0;
   const cursor = db.cursor(100);
   let count = 0;
-  for await (const row of await cursor<DbTesting>`SELECT * FROM db_testing WHERE id > ${lowest}`) {
+  for await (const row of cursor<DbTesting>`SELECT * FROM db_testing WHERE id > ${lowest}`) {
     count += 1;
     assert.ok(row.id > 1);
   }

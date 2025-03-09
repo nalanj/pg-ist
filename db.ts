@@ -1,7 +1,7 @@
 import pg from "pg";
 import Cursor from "pg-cursor";
 import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
-import { convertRow } from "./query.js";
+import { cursorRowConverter } from "./query.js";
 import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
@@ -135,9 +135,11 @@ export class DB implements Queryable {
         const result = client.query(cursor);
 
         let rows = await result.read(rowCount);
+        const transform = cursorRowConverter(rows[0]);
+
         while (rows.length > 0) {
           for (const row of rows) {
-            yield convertRow(row) as T;
+            yield transform(row) as T;
           }
 
           rows = await result.read(rowCount);

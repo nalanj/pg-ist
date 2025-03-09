@@ -1,6 +1,7 @@
 class SQLQuery {
   strings: string[];
   values: unknown[];
+  rowMode = "array" as const;
 
   constructor(strings: string[], values: unknown[]) {
     this.strings = strings;
