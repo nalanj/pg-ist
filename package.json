@@ -1,6 +1,6 @@
 {
 	"name": "pg-ist",
-	"description": "PostgreSQL powered by template strings",
+	"description": "Batteries included PostgreSQL Library for Node.js",
 	"type": "module",
 	"exports": {
 		".": "./dist/index.js"

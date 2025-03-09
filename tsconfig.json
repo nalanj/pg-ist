@@ -19,5 +19,11 @@
   },
 
   "include": ["**/*.ts", "cli/index.ts"],
-  "exclude": ["dist", "examples", "node_modules", "test-help.ts", "**/*.test.ts"]
+  "exclude": [
+    "dist",
+    "examples",
+    "node_modules",
+    "test-help.ts",
+    "**/*.test.ts"
+  ]
 }
