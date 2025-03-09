@@ -118,14 +118,14 @@ export function updateValues(
     throw new Error("Cannot generate update for no fields");
   }
 
-  const set = sql`SET`;
+  const setStmt = sql` `;
   for (const field of fields) {
-    set.strings[set.strings.length - 1] =
-      `${set.strings[set.strings.length - 1]} ${pg.escapeIdentifier(snakeCase(field))} = `;
-    set.values.push((setValues[field] as unknown) || null);
-    set.strings.push(",");
+    setStmt.strings[setStmt.strings.length - 1] =
+      `${setStmt.strings[setStmt.strings.length - 1]} ${pg.escapeIdentifier(snakeCase(field))} = `.trimStart();
+    setStmt.values.push((setValues[field] as unknown) || null);
+    setStmt.strings.push(",");
   }
-  set.strings[set.strings.length - 1] = "";
+  setStmt.strings[setStmt.strings.length - 1] = "";
 
-  return set;
+  return setStmt;
 }

@@ -1,5 +1,5 @@
 export { pgist } from "./db.js";
-export { sql, unsafe, insertValues } from "./sql.js";
+export { sql, unsafe, insertValues, updateValues } from "./sql.js";
 export {
   UniqueConstraintError,
   OnlyOneError,

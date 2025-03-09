@@ -71,7 +71,7 @@ describe("updateValues", () => {
   it("generates the expected query", () => {
     const q = updateValues(["id", "givenName"], { id: 1, givenName: "Smith" });
 
-    assert.equal(q.text, 'SET "id" = $1, "given_name" = $2');
+    assert.equal(q.text, '"id" = $1, "given_name" = $2');
     assert.deepEqual(q.values, [1, "Smith"]);
   });
 });
