@@ -25,7 +25,9 @@ const db = pgist({
   db: {
     connectionString: "postgres://postgres:postgres@127.0.0.1:5432/pgist-test",
     connectionTimeoutMillis: 3000,
+    application_name: "pgist-examples",
   },
+  migrationsDir: "./examples/migrations",
 });
 ```
 
@@ -173,9 +175,38 @@ for await (const row of await cursor<User>`SELECT * FROM users`) {
 }
 ```
 
+### Migrations
+
+pg-ist includes a simple migrations system, most based around using the pg-ist
+query functions. 
+
+pg-ist migrations are built by specifying a JavaScript or TypeScript file with a timestamp based prefix and exporting a single default function to migrate up.
+
+> [!IMPORTANT]  
+> pg-ist migrations do not include down migrations. You'll need to either reset the database and re-migrate or manually modify the `migrations` table and alter your schema.
+
+Here's an example migration:
+
+```ts
+import type { Queryable } from "../../db.js";
+
+export default async function up(db: Queryable) {
+  await db.query`
+    CREATE TABLE IF NOT EXISTS orgs (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `;
+}
+```
+
+See the [CLI](#cli) documentation for more details around specific migration commands.
+
 ## CLI
 
-pgist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it with code.
+pg-ist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it with code.
 
 Here's an example CLI script:
 
