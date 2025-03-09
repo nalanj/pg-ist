@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import type { DB } from "../db.js";
 import {
   availableMigrations,
