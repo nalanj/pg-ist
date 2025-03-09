@@ -1,3 +1,6 @@
+import pg from "pg";
+import { snakeCase } from "./case.js";
+
 class SQLQuery {
   strings: string[];
   values: unknown[];
@@ -69,4 +72,40 @@ export function sql(
 
 export function unsafe(unsafeString: string): SQLQuery {
   return new SQLQuery([unsafeString], []);
+}
+
+export function insertValues<const InsertFields extends [string, ...string[]]>(
+  fields: InsertFields,
+  ...rows: Record<string, unknown>[]
+): SQLQuery {
+  if (fields.length <= 0) {
+    throw new Error("Cannot generate insert for no fields");
+  }
+
+  const columns = unsafe(
+    fields.map((field) => pg.escapeIdentifier(snakeCase(field))).join(", "),
+  );
+
+  const itemTemplate = [Array(fields.length - 1).fill(", "), ")"];
+
+  const values = sql`(`;
+  for (let idx = 0; idx < rows.length; idx++) {
+    const row = rows[idx];
+    if (!row) {
+      throw new Error(`Row ${idx} is undefined`);
+    }
+
+    values.strings = values.strings.concat(...itemTemplate);
+
+    for (const field of fields) {
+      const value = (row[field] as unknown) || null;
+      values.values.push(value);
+    }
+
+    if (idx !== rows.length - 1) {
+      values.strings[values.strings.length - 1] += ", (";
+    }
+  }
+
+  return sql`(${columns}) VALUES ${values}`;
 }

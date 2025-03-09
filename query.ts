@@ -1,5 +1,5 @@
 import pg, { type QueryArrayConfig } from "pg";
-import { camelCase } from "./camel-case.js";
+import { camelCase } from "./case.js";
 import { OnlyOneError, UniqueConstraintError } from "./errors.js";
 
 export type QueryResult<T> = {

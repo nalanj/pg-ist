@@ -116,6 +116,25 @@ const limit = 10;
 const limited = sql`${select} LIMIT ${limit}`;
 ```
 
+#### insertValues
+
+`insertValues` reduces the drudgery of writing insert queries by accepting an array of columns to insert and objects that should be inserted using those columns. Any columns that are not present in the object are inserted as a `null` value.
+
+```js
+const result = await db.query<User>`
+  INSERT INTO users ${insertValues(["name", "email"], {
+    name: "John",
+    email: "john@acmebiz.xyz",
+  }, {
+    name: "Gerald",
+    email: "gerald@acmebiz.xyz",
+  })} 
+  RETURNING *
+`;
+```
+
+`insertValues` automatically converts fields to camel_case as it inserts objects.
+
 ### Transactions
 
 Use `db.tx` to set up a transaction:
