@@ -74,8 +74,8 @@ export function unsafe(unsafeString: string): SQLQuery {
   return new SQLQuery([unsafeString], []);
 }
 
-export function insertValues<const InsertFields extends [string, ...string[]]>(
-  fields: InsertFields,
+export function insertValues(
+  fields: string[],
   ...rows: Record<string, unknown>[]
 ): SQLQuery {
   if (fields.length <= 0) {
@@ -110,8 +110,8 @@ export function insertValues<const InsertFields extends [string, ...string[]]>(
   return sql`(${columns}) VALUES ${values}`;
 }
 
-export function updateValues<const UpdateFields extends [string, ...string[]]>(
-  fields: UpdateFields,
+export function updateValues(
+  fields: string[],
   setValues: Record<string, unknown>,
 ): SQLQuery {
   if (fields.length <= 0) {
