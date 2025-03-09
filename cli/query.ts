@@ -1,25 +1,19 @@
-import type { DB } from "./db.js";
-import { unsafe } from "./sql.js";
+import type { DB } from "../db.js";
+import { unsafe } from "../sql.js";
+import type { CLIOptions } from "./index.js";
 
-export async function cli(db: DB, cliName: string) {
-  const argv = process.argv;
-
-  let out = 0;
-
-  if (argv[2] === "query") {
-    out = await query(db, argv, cliName);
-  }
-
-  return out;
-}
-
-async function query(db: DB, argv: string[], cliName: string) {
-  if (!argv[3]) {
+export async function queryCommand(
+  db: DB,
+  argv: string[],
+  opts: CLIOptions,
+  cliName: string,
+) {
+  if (!argv[1]) {
     console.log(`Usage: ${cliName} query [sql]`);
     return 1;
   }
 
-  const queryString = unsafe(argv[3]);
+  const queryString = unsafe(argv[1]);
 
   try {
     const cursor = db.cursor(25);

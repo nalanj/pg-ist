@@ -16,6 +16,11 @@ export type PgistConfig = {
    * for more details.
    */
   db: pg.PoolConfig;
+
+  /**
+   * The directory where migration files are located
+   */
+  migrationsDir?: string;
 };
 
 export type TxFn<T> = (txn: ReturnType<typeof tx>) => Promise<T>;
@@ -38,8 +43,10 @@ export type Queryable = {
 
 export class DB implements Queryable {
   pool: pg.Pool;
+  config: PgistConfig;
 
   constructor(config: PgistConfig) {
+    this.config = config;
     this.pool = new pg.Pool(config.db);
   }
 
