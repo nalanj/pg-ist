@@ -119,6 +119,18 @@ describe("migrations", () => {
       assert.equal(pending.length, 2);
       assert.deepEqual(pending, [basicMigrations[1], basicMigrations[2]]);
     });
+
+    it("returns all migrations if none have been run", async () => {
+      await createMigrationsTable(db);
+
+      const migrations = await availableMigrations(
+        "./fixtures/migrations/basic/",
+      );
+
+      const pending = pendingMigrations(migrations, undefined);
+      assert.equal(pending.length, 3);
+      assert.deepEqual(pending, basicMigrations);
+    });
   });
 
   describe("createMigration", () => {

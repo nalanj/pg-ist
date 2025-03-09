@@ -3,6 +3,7 @@ import { createMigrationCommand } from "./create-migration.js";
 import type { CLIOptions } from "./index.js";
 import { migrationStatusCommand } from "./migration-status.js";
 import { pendingMigrationsCommand } from "./pending-migrations.js";
+import { runMigrationsCommand } from "./run-migrations.js";
 
 const migrateSubcommands = {
   create: {
@@ -19,10 +20,7 @@ const migrateSubcommands = {
   },
   run: {
     desc: "Run all pending migrations",
-    fn: () => {
-      console.log("NOT BUILT");
-      return 1;
-    },
+    fn: runMigrationsCommand,
   },
 };
 

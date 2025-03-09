@@ -15,5 +15,5 @@ export const db = pgist({
     connectionTimeoutMillis: 3000,
     application_name: "pgist-examples",
   },
-  migrationsDir: "./tmp",
+  migrationsDir: "./examples/migrations",
 });

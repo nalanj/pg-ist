@@ -16,7 +16,7 @@ export async function pendingMigrationsCommand(db: DB) {
   const available = await availableMigrations(migrationsDir);
   const latest = await latestMigration(db);
 
-  const pending = await pendingMigrations(available, latest);
+  const pending = pendingMigrations(available, latest);
 
   console.log();
 

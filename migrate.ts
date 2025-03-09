@@ -71,7 +71,7 @@ export function pendingMigrations(
     (migration) => migration.id > latest.id,
   );
 
-  if (!firstNotRun) {
+  if (firstNotRun === -1) {
     return [];
   }
 
@@ -145,7 +145,7 @@ export async function runMigration(db: Queryable, migration: MigrationPath) {
   // just a final check to ensure we're not doing something really bad here
   // by running a migration that has already been run
   if (latest && latest.id >= migration.id) {
-    throw new Error("Migration already run");
+    throw new Error(`Migration ${migration.id} already run`);
   }
 
   await migrationModule.default(db);
