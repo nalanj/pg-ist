@@ -204,6 +204,9 @@ export default async function up(db: Queryable) {
 
 See the [CLI](#cli) documentation for more details around specific migration commands.
 
+> [!WARNING]  
+> pg-ist migrations use advisory locks to ensure only one migration runs at a time. Ensure your connection is able to utilize advisory locks. It's generally not recommend to run database migrations through a PgBouncer instance.
+
 ## CLI
 
 pg-ist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it with code.
