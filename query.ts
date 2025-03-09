@@ -1,4 +1,4 @@
-import pg from "pg";
+import pg, { type QueryArrayConfig } from "pg";
 import { camelCase } from "./case.js";
 import { OnlyOneError, UniqueConstraintError } from "./errors.js";
 
