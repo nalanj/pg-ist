@@ -20,7 +20,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci --only=prod
+      - run: npm ci
 
       - run: npm version "${{ github.event.release.tag_name }}" --no-git-tag-version
 
