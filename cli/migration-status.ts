@@ -6,7 +6,7 @@ export async function migrationStatusCommand(db: DB) {
 
   console.log();
   if (status) {
-    console.log(`Migrated to ${status.id}`);
+    console.log(`Currently migrated to ${status.id}`);
   } else {
     console.log("Never migrated");
   }

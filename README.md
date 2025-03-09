@@ -175,7 +175,7 @@ for await (const row of await cursor<User>`SELECT * FROM users`) {
 
 ## CLI
 
-pgist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it in code.
+pgist includes support for creating a CLI against your database. It's included as a function rather than a defined CLI application so that you can easily configure it with code.
 
 Here's an example CLI script:
 
@@ -202,6 +202,52 @@ Runs a query and returns the results as newline delimited json.
 {"id":1187,"name":"BOB"}
 {"id":1188,"name":"SALLY"}
 {"id":1189,"name":"EUNICE"}
+```
+
+#### `[cli] migrate create`
+
+Creates a new migration file.
+
+##### Options:
+
+- `--typescript` - generate migration file as TypeScript
+
+```sh
+> examples/cli migrate create create-uploads
+
+Created migration examples/migrations/20250309154340-create-uploads.js
+```
+
+#### `[cli] migrate status`
+
+Displays the current migration status.
+
+```sh
+> examples/cli migrate status
+
+Currently migrated to 20250309153536
+```
+
+#### `[cli] migrate pending`
+
+Displays a list of pending migrations.
+
+```sh
+> examples/cli migrate pending
+
+Pending migrations:
+  - 20250309154340-create-uploads.ts
+```
+
+#### `[cli] migrate run`
+
+Runs pending migrations
+
+```sh
+> examples/cli migrate run
+
+Migrating:
+  - 20250309154340-create-uploads.ts
 ```
 
 ## Typedocs
