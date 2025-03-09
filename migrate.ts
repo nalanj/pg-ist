@@ -12,6 +12,7 @@ export type MigrationPath = {
   id: string;
 };
 
+export const migrateLockId = 8_637_929_284_372_155;
 export const migrationRegex = /^(\d{14})-(.*)\.[cm]?[tj]s$/;
 
 export async function createMigrationsTable(db: Queryable) {
@@ -111,6 +112,24 @@ export async function createMigration(
   return filename;
 }
 
+export async function lockMigrations(db: Queryable) {
+  const lock = await db.onlyOne<{
+    locked: boolean;
+  }>`SELECT pg_try_advisory_lock(${migrateLockId}) AS locked`;
+  if (!lock.locked) {
+    throw new Error("Unable to acquire migration lock");
+  }
+}
+
+export async function unlockMigrations(db: Queryable) {
+  const unlock = await db.onlyOne<{
+    unlocked: boolean;
+  }>`SELECT pg_advisory_unlock(${migrateLockId}) as unlocked`;
+  if (!unlock.unlocked) {
+    throw new Error("Unable to release migration lock");
+  }
+}
+
 export async function runMigration(db: Queryable, migration: MigrationPath) {
   const migrationModule = await import(migration.path);
   if (!migrationModule.default) {
@@ -119,8 +138,8 @@ export async function runMigration(db: Queryable, migration: MigrationPath) {
     );
   }
 
+  await lockMigrations(db);
   await createMigrationsTable(db);
-
   const latest = await latestMigration(db);
 
   // just a final check to ensure we're not doing something really bad here
@@ -132,4 +151,5 @@ export async function runMigration(db: Queryable, migration: MigrationPath) {
   await migrationModule.default(db);
 
   await insertMigration(db, migration.id);
+  await unlockMigrations(db);
 }

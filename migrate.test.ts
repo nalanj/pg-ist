@@ -9,9 +9,11 @@ import {
   createMigrationsTable,
   insertMigration,
   latestMigration,
+  lockMigrations,
   migrationRegex,
   pendingMigrations,
   runMigration,
+  unlockMigrations,
 } from "./migrate.js";
 import { testDB } from "./test-help";
 
@@ -179,6 +181,17 @@ describe("migrations", () => {
       await insertMigration(db, migrationPath.id);
 
       await assert.rejects(runMigration(db, migrationPath));
+    });
+
+    it("throws if migration is locked", async () => {
+      const migrationPath = {
+        path: "./fixtures/migrations/basic/20241231011345-create-orgs.js",
+        id: "20241231011345",
+      };
+
+      await lockMigrations(db);
+      await assert.rejects(runMigration(testDB(), migrationPath));
+      await unlockMigrations(db);
     });
   });
 });
