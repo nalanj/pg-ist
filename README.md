@@ -120,20 +120,45 @@ const limited = sql`${select} LIMIT ${limit}`;
 
 `insertValues` reduces the drudgery of writing insert queries by accepting an array of columns to insert and objects that should be inserted using those columns. Any columns that are not present in the object are inserted as a `null` value.
 
-```js
+> [!WARNING]  
+> The first argument to `insertValues`, the list of fields, should be specified in code and never from user input.
+
+```typescript
+import { insertValues } from "../sql.js";
+import { type User, db } from "./db.js";
+
 const result = await db.query<User>`
   INSERT INTO users ${insertValues(["name", "email"], {
     name: "John",
     email: "john@acmebiz.xyz",
-  }, {
-    name: "Gerald",
-    email: "gerald@acmebiz.xyz",
   })} 
   RETURNING *
 `;
+
 ```
 
 `insertValues` automatically converts fields to camel_case as it inserts objects.
+
+#### updateValues
+
+Like [insertValues](#insertvalues), `updateValues` reduces the drudgery of writing update queries by accepting an array of columns to update and an object that should be inserted using those columns. Any columns that are not present in the object are inserted as a `null` value.
+
+> [!WARNING]  
+> The first argument to `updateValues`, the list of fields, should be specified in code and never from user input.
+
+```typescript
+import { updateValues } from "../sql.js";
+import { type User, db } from "./db.js";
+
+const result = await db.query<User>`
+  UPDATE users SET ${updateValues(["name", "email"], {
+    name: "John",
+    email: "john@acmebiz.xyz",
+  })}
+  WHERE id = 1
+  RETURNING *
+`;
+```
 
 ### Transactions
 

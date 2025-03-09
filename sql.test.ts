@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { insertValues, sql } from "./sql.js";
+import { insertValues, sql, updateValues } from "./sql.js";
 
 describe("sql", () => {
   it("simple query", () => {
@@ -64,5 +64,14 @@ describe("insertValues", () => {
 
     assert.equal(q.text, '("id", "given_name") VALUES ($1, $2), ($3, $4)');
     assert.deepEqual(q.values, [1, "Smith", 2, "Jones"]);
+  });
+});
+
+describe("updateValues", () => {
+  it("generates the expected query", () => {
+    const q = updateValues(["id", "givenName"], { id: 1, givenName: "Smith" });
+
+    assert.equal(q.text, '"id" = $1, "given_name" = $2');
+    assert.deepEqual(q.values, [1, "Smith"]);
   });
 });

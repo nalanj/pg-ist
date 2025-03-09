@@ -74,8 +74,8 @@ export function unsafe(unsafeString: string): SQLQuery {
   return new SQLQuery([unsafeString], []);
 }
 
-export function insertValues<const InsertFields extends [string, ...string[]]>(
-  fields: InsertFields,
+export function insertValues(
+  fields: string[],
   ...rows: Record<string, unknown>[]
 ): SQLQuery {
   if (fields.length <= 0) {
@@ -108,4 +108,24 @@ export function insertValues<const InsertFields extends [string, ...string[]]>(
   }
 
   return sql`(${columns}) VALUES ${values}`;
+}
+
+export function updateValues(
+  fields: string[],
+  setValues: Record<string, unknown>,
+): SQLQuery {
+  if (fields.length <= 0) {
+    throw new Error("Cannot generate update for no fields");
+  }
+
+  const setStmt = sql` `;
+  for (const field of fields) {
+    setStmt.strings[setStmt.strings.length - 1] =
+      `${setStmt.strings[setStmt.strings.length - 1]} ${pg.escapeIdentifier(snakeCase(field))} = `.trimStart();
+    setStmt.values.push((setValues[field] as unknown) || null);
+    setStmt.strings.push(",");
+  }
+  setStmt.strings[setStmt.strings.length - 1] = "";
+
+  return setStmt;
 }
