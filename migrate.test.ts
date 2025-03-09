@@ -160,7 +160,7 @@ describe("migrations", () => {
 
   describe("runMigration", () => {
     afterEach(async () => {
-      await db.query`DROP TABLE IF EXISTS orgs`;
+      await db.query`DROP TABLE IF EXISTS orgs CASCADE`;
     });
 
     it("runs a migration", async () => {
