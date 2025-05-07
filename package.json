@@ -13,7 +13,7 @@
 		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
 		"build": "tsc",
 		"clean": "rm -rf dist",
-		"prepare": "rm -rf dist; tsc"
+		"prepublish": "rm -rf dist; tsc"
 	},
 	"repository": {
 		"type": "git",
