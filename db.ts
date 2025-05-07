@@ -2,7 +2,6 @@ import pg from "pg";
 import Cursor from "pg-cursor";
 import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
 import { cursorRowConverter } from "./query.js";
-import { oneFn, onlyOneFn, queryFn } from "./queryFn.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
@@ -93,30 +92,6 @@ export class DB implements Queryable {
     } finally {
       await client.release();
     }
-  }
-
-  queryFn<T extends object, P = Record<string, unknown>>(
-    strings: TemplateStringsArray,
-    ...argsIn: (keyof P)[]
-  ) {
-    const fn = queryFn(strings, ...argsIn);
-    return (props: P, tx?: Queryable) => fn(props, tx || this);
-  }
-
-  oneFn<T extends object, P = Record<string, unknown>>(
-    strings: TemplateStringsArray,
-    ...argsIn: (keyof P)[]
-  ) {
-    const fn = oneFn(strings, ...argsIn);
-    return (props: P, tx?: Queryable) => fn(props, tx || this);
-  }
-
-  onlyOneFn<T extends object, P = Record<string, unknown>>(
-    strings: TemplateStringsArray,
-    ...argsIn: (keyof P)[]
-  ) {
-    const fn = onlyOneFn(strings, ...argsIn);
-    return (props: P, tx?: Queryable) => fn(props, tx || this);
   }
 
   cursor(rowCount = 100) {

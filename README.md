@@ -193,19 +193,6 @@ transaction function, `tx`, includes a property `rollback()` to roll back the
 transaction at any point. If any exception is thrown inside of the transaction
 it also causes the transaction to roll back.
 
-### Define query functions
-
-`pg-ist` includes the ability to efficiently define query functions. `queryFn`,
-`oneFn`, and `onlyOneFn` are all available.
-
-```ts
-import { type User, db } from "./db.js";
-
-db.queryFn<User, { id: string }>`SELECT * FROM users WHERE id = ${"id"}`;
-```
-
-This defines a function that accepts a properties object with one property, `id`, and returns an iterable set of `User` objects.
-
 ### Cursors
 
 `pg-ist` supports cursors. They're ideal for situations where you need to iterate over large sets of rows.
