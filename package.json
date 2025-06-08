@@ -8,7 +8,7 @@
 	"version": "0.0.11",
 	"scripts": {
 		"fix": "biome check --write",
-    "lint": "biome check",
+		"lint": "biome check",
 		"test": "tsx --test",
 		"citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
 		"build": "tsc",
@@ -44,7 +44,7 @@
 		"typescript": "5.8.3"
 	},
 	"volta": {
-		"node": "22.14.0"
+		"node": "22.16.0"
 	},
 	"files": [
 		"dist/**/*",
