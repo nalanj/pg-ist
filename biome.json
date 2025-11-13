@@ -1,12 +1,11 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.5/schema.json",
 
+  "files": {
+    "includes": ["**", "!dist/**/*"]
+  },
   "formatter": {
     "useEditorconfig": true
-  },
-
-  "organizeImports": {
-    "enabled": true
   },
   "linter": {
     "enabled": true,
@@ -19,9 +18,6 @@
         "useTopLevelRegex": "error"
       }
     }
-  },
-  "files": {
-    "ignore": ["package.json"]
   },
   "vcs": {
     "enabled": true,

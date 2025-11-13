@@ -3,13 +3,13 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, it } from "node:test";
 import {
-  type MigrationRow,
   availableMigrations,
   createMigration,
   createMigrationsTable,
   insertMigration,
   latestMigration,
   lockMigrations,
+  type MigrationRow,
   migrationRegex,
   pendingMigrations,
   runMigration,

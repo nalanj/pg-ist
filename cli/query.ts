@@ -5,7 +5,7 @@ import type { CLIOptions } from "./index.js";
 export async function queryCommand(
   db: DB,
   argv: string[],
-  opts: CLIOptions,
+  _opts: CLIOptions,
   cliName: string,
 ) {
   if (!argv[1]) {

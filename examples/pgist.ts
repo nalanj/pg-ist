@@ -6,3 +6,5 @@ const db = pgist({
     connectionTimeoutMillis: 3000,
   },
 });
+
+console.log(db);

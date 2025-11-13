@@ -1,5 +1,5 @@
 import { insertValues } from "../sql.js";
-import { type User, db } from "./db.js";
+import { db, type User } from "./db.js";
 
 const result = await db.query<User>`
   INSERT INTO users ${insertValues(["name", "email"], {
@@ -8,3 +8,5 @@ const result = await db.query<User>`
   })} 
   RETURNING *
 `;
+
+console.log(result);

@@ -1,5 +1,5 @@
 import { updateValues } from "../sql.js";
-import { type User, db } from "./db.js";
+import { db, type User } from "./db.js";
 
 const result = await db.query<User>`
   UPDATE users SET ${updateValues(["name", "email"], {
@@ -9,3 +9,5 @@ const result = await db.query<User>`
   WHERE id = 1
   RETURNING *
 `;
+
+console.log(result);

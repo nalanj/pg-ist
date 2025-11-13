@@ -5,3 +5,4 @@ const select = sql`SELECT * FROM users WHERE id = ${id}`;
 
 const limit = 10;
 const limited = sql`${select} LIMIT ${limit}`;
+console.log(limited);

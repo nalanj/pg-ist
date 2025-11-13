@@ -1,7 +1,12 @@
 import pg from "pg";
 import Cursor from "pg-cursor";
-import { type QueryResult, query, queryOne, queryOnlyOne } from "./query.js";
-import { cursorRowConverter } from "./query.js";
+import {
+  cursorRowConverter,
+  type QueryResult,
+  query,
+  queryOne,
+  queryOnlyOne,
+} from "./query.js";
 import { sql } from "./sql.js";
 import { tx } from "./tx.js";
 
