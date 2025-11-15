@@ -1,4 +1,4 @@
-import { pgist } from "./db.js";
+import { pgist } from "./db.ts";
 
 export const databaseUrl =
   "postgres://postgres:postgres@127.0.0.1:5432/pgist-test";

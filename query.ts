@@ -1,6 +1,6 @@
 import pg, { type QueryArrayConfig } from "pg";
-import { camelCase } from "./case.js";
-import { OnlyOneError, UniqueConstraintError } from "./errors.js";
+import { camelCase } from "./case.ts";
+import { OnlyOneError, UniqueConstraintError } from "./errors.ts";
 
 export type QueryResult<T> = {
   length: number;

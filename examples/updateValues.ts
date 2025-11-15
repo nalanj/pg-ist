@@ -1,5 +1,5 @@
-import { updateValues } from "../sql.js";
-import { db, type User } from "./db.js";
+import { updateValues } from "../sql.ts";
+import { db, type User } from "./db.ts";
 
 const result = await db.query<User>`
   UPDATE users SET ${updateValues(["name", "email"], {

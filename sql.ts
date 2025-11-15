@@ -1,5 +1,5 @@
 import pg from "pg";
-import { snakeCase } from "./case.js";
+import { snakeCase } from "./case.ts";
 
 class SQLQuery {
   strings: string[];

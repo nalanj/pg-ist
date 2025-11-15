@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { after, afterEach, before, test } from "node:test";
-import { OnlyOneError } from "./errors.js";
-import { testDB } from "./test-help.js";
+import { OnlyOneError } from "./errors.ts";
+import { testDB } from "./test-help.ts";
 
 const db = testDB();
 

@@ -14,8 +14,8 @@ import {
   pendingMigrations,
   runMigration,
   unlockMigrations,
-} from "./migrate.js";
-import { testDB } from "./test-help";
+} from "./migrate.ts";
+import { testDB } from "./test-help.ts";
 
 const db = testDB();
 

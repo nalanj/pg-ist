@@ -3,17 +3,14 @@
   "description": "Batteries included PostgreSQL Library for Node.js",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "index.ts"
   },
   "version": "0.0.11",
   "scripts": {
     "fix": "biome check --write",
     "lint": "biome check; tsc --noEmit",
-    "test": "tsx --test",
-    "citest": "biome check && tsx --test --test-reporter node-test-github-reporter",
-    "build": "tsc",
-    "clean": "rm -rf dist",
-    "prepare": "rm -rf dist; tsc"
+    "test": "node --test",
+    "citest": "biome check && node --test --test-reporter node-test-github-reporter"
   },
   "repository": {
     "type": "git",
@@ -36,11 +33,10 @@
     "@types/pg": "8.15.6",
     "@types/pg-cursor": "2.7.2",
     "node-test-github-reporter": "1.3.1",
-    "tsx": "4.20.6",
     "typescript": "5.9.3"
   },
   "volta": {
-    "node": "22.16.0"
+    "node": "24.11.1"
   },
   "files": ["dist/**/*", "README.md", "LICENSE"]
 }

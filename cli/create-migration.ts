@@ -1,6 +1,6 @@
-import type { DB } from "../db.js";
-import { createMigration } from "../migrate.js";
-import type { CLIOptions } from "./index.js";
+import type { DB } from "../db.ts";
+import { createMigration } from "../migrate.ts";
+import type { CLIOptions } from "./index.ts";
 
 export async function createMigrationCommand(
   db: DB,

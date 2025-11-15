@@ -1,4 +1,4 @@
-import type { Queryable } from "../../db.js";
+import type { Queryable } from "../../db.ts";
 
 export default async function up(db: Queryable) {
   await db.query`

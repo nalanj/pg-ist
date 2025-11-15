@@ -1,4 +1,4 @@
-import { pgist } from "../index.js";
+import { pgist } from "../index.ts";
 
 export type User = {
   id: number;

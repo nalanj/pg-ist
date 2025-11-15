@@ -1,29 +1,10 @@
 {
   "compilerOptions": {
+    "noEmit": true, // Optional - see note below
+    "target": "esnext",
+    "module": "nodenext",
+    "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es2022",
-    "allowJs": true,
-    "resolveJsonModule": true,
-    "moduleDetection": "force",
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "module": "NodeNext",
-    "outDir": "dist",
-    "declaration": true,
-    "lib": ["es2022"]
-  },
-
-  "include": ["**/*.ts", "cli/index.ts"],
-  "exclude": [
-    "dist",
-    "examples",
-    "node_modules",
-    "test-help.ts",
-    "**/*.test.ts"
-  ]
+    "verbatimModuleSyntax": true
+  }
 }

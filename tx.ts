@@ -1,7 +1,7 @@
 import type pg from "pg";
-import type { Queryable } from "./db.js";
-import { query, queryOne, queryOnlyOne } from "./query.js";
-import { sql } from "./sql.js";
+import type { Queryable } from "./db.ts";
+import { query, queryOne, queryOnlyOne } from "./query.ts";
+import { sql } from "./sql.ts";
 
 export type Tx = Queryable & { rollback: () => Promise<void> };
 

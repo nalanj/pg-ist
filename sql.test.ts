@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { insertValues, sql, updateValues } from "./sql.js";
+import { insertValues, sql, updateValues } from "./sql.ts";
 
 describe("sql", () => {
   it("simple query", () => {

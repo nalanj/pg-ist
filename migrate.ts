@@ -1,6 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import type { Queryable } from "./db.js";
+import type { Queryable } from "./db.ts";
 
 export type MigrationRow = {
   id: string;

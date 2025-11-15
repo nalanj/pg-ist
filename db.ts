@@ -6,9 +6,9 @@ import {
   query,
   queryOne,
   queryOnlyOne,
-} from "./query.js";
-import { sql } from "./sql.js";
-import { tx } from "./tx.js";
+} from "./query.ts";
+import { sql } from "./sql.ts";
+import { tx } from "./tx.ts";
 
 /**
  * Configuration for pg-ist

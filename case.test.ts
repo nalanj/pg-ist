@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, test } from "node:test";
-import { camelCase, snakeCase } from "./case.js";
+import { camelCase, snakeCase } from "./case.ts";
 
 describe("camelCase", () => {
   test("simple case", () => {
