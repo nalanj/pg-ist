@@ -80,7 +80,7 @@ export class DB implements Queryable {
     try {
       return await queryOne<T>(q, client);
     } finally {
-      await client.release();
+      client.release();
     }
   }
 
@@ -95,7 +95,7 @@ export class DB implements Queryable {
     try {
       return await queryOnlyOne<T>(q, client);
     } finally {
-      await client.release();
+      client.release();
     }
   }
 
@@ -125,7 +125,7 @@ export class DB implements Queryable {
           rows = await result.read(rowCount);
         }
       } finally {
-        await client.release();
+        client.release();
       }
     };
   }
