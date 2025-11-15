@@ -38,5 +38,7 @@
   "volta": {
     "node": "24.11.1"
   },
-  "files": ["dist/**/*", "README.md", "LICENSE"]
+  "engines": {
+    "node": ">=24"
+  }
 }
