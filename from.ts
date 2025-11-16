@@ -9,17 +9,34 @@ type TypedQuery<T extends z.ZodObject> = {
 };
 
 class From {
-  fromClause: SQLQuery;
-  colsMap: Record<string, SQLQuery>;
+  fromClause: SQLQuery = sql``;
+  whereClause: SQLQuery = sql``;
+  colsMap: Record<string, SQLQuery> = {};
 
-  constructor(stringsIn: TemplateStringsArray, ...argsIn: unknown[]) {
-    this.fromClause = sql(stringsIn, argsIn);
+  constructor(basedOn?: From) {
+    if (basedOn) {
+      this.fromClause = basedOn.fromClause;
+      this.whereClause = basedOn.whereClause;
+      this.colsMap = basedOn.colsMap;
+    }
   }
 
   cols(colsMap: Record<string, SQLQuery>) {
-    this.colsMap = colsMap;
-    return this;
+    const out = new From(this);
+    out.colsMap = colsMap;
+    return out;
   }
+
+  where(stringsIn: TemplateStringsArray, ...argsIn: unknown[]) {
+    const out = new From(this);
+    out.whereClause = sql`WHERE ${sql(stringsIn, argsIn)}`;
+    return out;
+  }
+
+  // group by
+  // having
+  // order by
+  // limit/offset
 
   select<T extends z.ZodObject>(schema: T): TypedQuery<T> {
     const asNames = Object.keys(schema.shape);
@@ -40,7 +57,7 @@ class From {
     }
 
     return {
-      query: sql`SELECT ${selectClause} FROM ${this.fromClause}`,
+      query: sql`SELECT ${selectClause} FROM ${this.fromClause} ${this.whereClause}`,
       schema,
     };
   }
@@ -50,5 +67,7 @@ export function from(
   stringsIn: TemplateStringsArray,
   ...argsIn: unknown[]
 ): From {
-  return new From(stringsIn, argsIn);
+  const out = new From();
+  out.fromClause = sql(stringsIn, argsIn);
+  return out;
 }

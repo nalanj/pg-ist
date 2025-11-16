@@ -5,7 +5,7 @@ import * as z from "zod";
 import { sql } from "./sql.ts";
 
 test("whatever", () => {
-  const res = from`users LEFT JOIN orgs ON orgs.id = users.id`
+  const res = from`users LEFT JOIN orgs ON orgs.id = users.id`.where`id = 12`
     .cols({ userId: sql`id` })
     .select(
       z.object({
