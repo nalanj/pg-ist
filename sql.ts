@@ -53,7 +53,7 @@ export function sql(
 
       strings.splice(outOffset + 1, 0, ...arg.strings.slice(1));
       values.splice(outOffset, 0, ...arg.values);
-      outOffset += arg.strings.length - 1;
+      outOffset += arg.strings.length === 0 ? 0 : arg.strings.length - 1;
     } else {
       strings[outOffset] = strings[outOffset]
         ? strings[outOffset] + (stringsIn[inOffset] ?? "")
