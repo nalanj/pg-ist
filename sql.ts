@@ -1,7 +1,7 @@
 import pg from "pg";
 import { snakeCase } from "./case.ts";
 
-class SQLQuery {
+export class SQLQuery {
   strings: string[];
   values: unknown[];
   rowMode = "array" as const;
@@ -13,6 +13,10 @@ class SQLQuery {
 
   get text() {
     let out = "";
+    if (this.strings.length === 0) {
+      return out;
+    }
+
     this.strings.slice(0, -1).forEach((string, idx) => {
       out += `${string}$${idx + 1}`;
     });

@@ -3,6 +3,12 @@ import { describe, it } from "node:test";
 import { insertValues, sql, updateValues } from "./sql.ts";
 
 describe("sql", () => {
+  it("empty", () => {
+    const out = sql``;
+    assert.strictEqual(out.text, "");
+    assert.deepStrictEqual(out.values, []);
+  });
+
   it("simple query", () => {
     const yes = 12;
     const out = sql`
